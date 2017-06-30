@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>    
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>  
+
+<configuration>
+
+    <!-- 指定hdfs的nameservice为bigha(hdfs-site.xml指定) -->
+    <property>
+        <name>fs.defaultFS</name>
+        <value>hdfs://bigha</value>
+    </property>
+
+    <!-- 指定hadoop运行时产生文件的存储路径 -->
+    <property>
+        <name>hadoop.tmp.dir</name>
+        <value>/opt/ws/hadoop/tmp</value>
+    </property>
+
+    <!-- 删除的文件垃圾箱存放时间(以分钟为单位) -->
+    <property>
+        <name>fs.trash.interval</name>
+        <value>1440</value>
+    </property> 
+
+    <!-- 来设置SequenceFile中用到的读/写缓存大小(一页4k的倍数, 字节为单位) -->
+    <property>
+        <name>io.file.buffer.size</name>
+        <value>65536</value>
+    </property>  
+
+    <!-- 指定zookeeper地址，多个用,分割 -->
+    <property>
+        <name>ha.zookeeper.quorum</name>
+        <value>node2:2181,node3:2181,node4:2181</value>
+    </property>
+
+    <!-- 设置zookeeper 心跳超时时间 -->
+    <property>
+        <name>ha.zookeeper.session-timeout.ms</name>
+        <value>300000</value>
+    </property>  
+
+</configuration>

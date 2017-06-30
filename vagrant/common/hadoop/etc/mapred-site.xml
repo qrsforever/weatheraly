@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>    
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>  
+
+<configuration>
+    <!-- 框架MR运行在YARN -->
+    <property>
+        <name>mapreduce.framework.name</name>
+        <value>yarn</value>
+    </property>
+
+    <!-- 设置每个job的map任务数 -->
+    <property>  
+        <name>mapreduce.job.maps</name>  
+        <value>6</value>  
+    </property>  
+
+    <!-- 设置每个job的reduce任务数 -->
+    <property>  
+        <name>mapreduce.job.reduces</name>  
+        <value>6</value>  
+    </property>  
+
+</configuration>

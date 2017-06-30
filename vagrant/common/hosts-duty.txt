@@ -1,0 +1,14 @@
+# NN: name node
+# DN: data node
+# JN: journal node
+# RM: resource manager
+# NN: node manager
+# ZK: zookeeper service
+# FC: DFSZKFailoverController
+
+node0:NN RM FC
+node1:NN FC
+node2:ZK JN DN
+node3:ZK JN DN
+node4:ZK JN DN
+node5:RM
