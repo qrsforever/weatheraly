@@ -2,7 +2,8 @@
 
 ########### 此脚本会被vagrant调用， 修改慎重
 
-hn=$1
+cleanup=$1
+hn=$2
 
 if [[ x$hn == x ]]
 then
@@ -10,11 +11,15 @@ then
     echo "Not run by vagrant, host mode"
 fi
 
+if [[ x$cleanup == x ]]
+then
+    cleanup=0
+fi
+
 user=lidong
 rsa_file=/home/$user/.ssh/id_rsa
 ssh_conf=/home/$user/.ssh/config
-script_file=/home/$user/run.sh
-echo -e "#!/bin/bash\n" > $script_file
+whoami=/home/$user/whoami.txt
 
 WS_DIR=/home/$user/workspace
 CONF_DIR=/home/$user/nfs
@@ -55,7 +60,6 @@ __system_conf()
         mkdir -p $WS_DIR
         chown $user:$user $WS_DIR
     fi
-    chown $user:$user $script_file
 
     if [[ ! -L /opt/ws ]]
     then
@@ -151,64 +155,72 @@ __zookeeper_conf() {
     cd -
 }
 
-if [[ x$hn != x ]]
-then
-    __system_conf $hn
-fi
+__main() {
 
-__hadoop_conf $hn
-
-echo "# 注意启动顺序 " >> $script_file
-echo "# zookeeper > journalnode > format > namenode > datanode " >> $script_file
-
-for t in ${tasks[@]}
-do
-    if [[ x$t == x'NN' ]]
+    if (( $cleanup == 1 ))
     then
-        echo "hdfs namenode -format" >> $script_file
+        echo "cleanup: *** "
+        if [[ -d $WS_DIR ]]
+        then
+        rm -rf $WS_DIR
+        fi
+
+        if [[ -f $whoami ]]
+        then
+            rm -rf $whoami
+        fi
     fi
 
-    if [[ x$t == x'ZK' ]]
+    if [[ x$hn != x ]]
     then
-        __zookeeper_conf $hn
-        echo "# 启动zookeeper" >> $script_file
-        echo "zkServer.sh start" >> $script_file
-        echo "sleep 5" >> $script_file
-        echo "zkServer.sh status" >> $script_file
+        __system_conf $hn
     fi
 
-    if [[ x$t == x'JN' ]]
-    then
-        echo "# 先于hdfs namenode -format执行" >> $script_file
-        echo "# 启动namenode日志同步服务journalnode" >> $script_file
-        echo "hadoop-daemon.sh start journalnode" >> $script_file
-    fi
+    __hadoop_conf $hn
 
-    if [[ x$t == x'NN' ]]
-    then
-        echo "# 在主namenode格式化hdfs namenode -format之后" >> $script_file
-        echo "# 同步并启用备用namenode" >> $script_file
-        echo "hdfs namenode -bootstrapStandby" >> $script_file
-        echo "hadoop-daemon.sh start namenode" >> $script_file
-        echo "# 在其中一台namenode执行即可" >> $script_file
-        echo "hdfs zkfc -formatZK" >> $script_file
-        echo "# 在一台namendoe上启动即可" >> $script_file
-        echo "start-dfs.sh" >> $script_file
-    fi
+    echo "# 注意启动顺序 " >> $whoami
+    echo "# zookeeper > journalnode > format > namenode > datanode " >> $whoami
 
-    if [[ x$t == x'FC' ]]
-    then
-        echo "# 启动DFSZKFailoverController(需要启动的节点都启动)" >> $script_file
-        echo "hadoop-daemon.sh start zkfc" >> $script_file
-    fi
 
-    if [[ x$t == x'RM' ]]
-    then
-        echo "# 启动RM" >> $script_file
-        echo "start-yarn.sh" >> $script_file
-        echo "# yarn-daemon.sh start resourcemanager" >> $script_file
-    fi
+    echo "###" > $whoami
+    for t in ${tasks[@]}
+    do
+        if [[ x$t == x'NN' ]]
+        then
+            echo "hdfs namenode -format" >> $whoami
+        fi
 
-done
+        if [[ x$t == x'ZK' ]]
+        then
+            __zookeeper_conf $hn
+            echo "Zookeeper node" >> $whoami
+        fi
 
-chmod 777 $script_file
+        if [[ x$t == x'JN' ]]
+        then
+            echo "Journal node" >> $whoami
+        fi
+
+        if [[ x$t == x'NN' ]]
+        then
+            echo "Name node" >> $whoami
+        fi
+
+        if [[ x$t == x'FC' ]]
+        then
+            echo "FailoverController node" >> $whoami
+        fi
+
+        if [[ x$t == x'RM' ]]
+        then
+            echo "Resource manger node" >> $whoami
+        fi
+
+        if [[ x$t == x'DN' ]]
+        then
+            echo "Data node" >> $whoami
+        fi
+    done
+}
+
+__main

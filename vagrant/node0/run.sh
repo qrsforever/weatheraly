@@ -1,5 +1,7 @@
 #!/bin/bash
 
+user=lidong
+
 __ssh_conf() 
 {
     # node0 是host主机， not虚拟机
@@ -15,11 +17,11 @@ __ssh_conf()
 
     # cat authorized_keys >> ~/.ssh/authorized_keys
 
-    scp -r authorized_keys node1:/home/lidong/.ssh
-    scp -r authorized_keys node2:/home/lidong/.ssh
-    scp -r authorized_keys node3:/home/lidong/.ssh
-    scp -r authorized_keys node4:/home/lidong/.ssh
-    scp -r authorized_keys node5:/home/lidong/.ssh
+    scp -r authorized_keys node1:/home/$user/.ssh
+    scp -r authorized_keys node2:/home/$user/.ssh
+    scp -r authorized_keys node3:/home/$user/.ssh
+    scp -r authorized_keys node4:/home/$user/.ssh
+    scp -r authorized_keys node5:/home/$user/.ssh
 }
 
 __ssh_conf()

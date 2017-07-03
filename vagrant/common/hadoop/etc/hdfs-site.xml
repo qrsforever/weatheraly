@@ -92,13 +92,13 @@
     <!--指定namenode名称空间的存储地址-->
     <property>
         <name>dfs.namenode.name.dir</name>
-        <value>file:/opt/ws/hadoop/hdfs/name</value>
+        <value>file:///opt/ws/hadoop/hdfs/name</value>
     </property>
 
     <!--指定datanode数据存储地址-->
     <property>
         <name>dfs.datanode.data.dir</name>
-        <value>file:/opt/ws/hadoop/hdfs/data</value>
+        <value>file:///opt/ws/hadoop/hdfs/data</value>
     </property>
 
     <!--指定数据冗余份数-->

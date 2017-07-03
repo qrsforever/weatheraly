@@ -8,6 +8,9 @@
 # backwards compatibility). Please don't change it unless you know what
 # you're doing.
 
+user = "lidong"
+vmnum = 5
+
 # 如果存在对应节点， 创建nfs映射目录
 components = ["hadoop", "zookeeper", "hbase", "hive", "pig"]
 
@@ -21,14 +24,14 @@ Vagrant.configure("2") do |config|
     config.vm.box_check_update = false
 
     # 登录相关
-    config.ssh.username = "lidong"
+    config.ssh.username = "#{user}"
     # 不安全， 不建议使用
     # config.ssh.password = "1"
     # config.ssh.insert_key = true
     config.ssh.private_key_path = "~/.ssh/id_rsa"
     # config.ssh.forward_agent = true
 
-    (1..5).each do |i|
+    (1..vmnum).each do |i|
         config.vm.define "node#{i}" do |node|
             # 主机名
             node.vm.hostname = "node#{i}"
@@ -55,10 +58,10 @@ Vagrant.configure("2") do |config|
                     if [[ ! -d nfs/{cn} ]]
                     then
                         mkdir -p nfs/#{cn}
-                        chown lidong:lidong nfs/#{cn}
+                        chown #{user}:#{user} nfs/#{cn}
                     fi
                     SHELL
-                    node.vm.synced_folder "node#{i}/#{cn}", "/home/lidong/nfs/#{cn}", owner: "lidong", group: "lidong"
+                    node.vm.synced_folder "node#{i}/#{cn}", "/home/#{user}/nfs/#{cn}", owner: "#{user}", group: "#{user}"
                 end
             end
 
@@ -66,7 +69,7 @@ Vagrant.configure("2") do |config|
             if File.file?("script.sh")
                 config.vm.provision "shell" do |s|
                     s.path = "script.sh"
-                    s.args = node.vm.hostname
+                    s.args = [ENV.has_key?('CLEANUP') ? ENV['CLEANUP'].to_i : 0, node.vm.hostname]
                 end
             end
         end
@@ -77,9 +80,9 @@ Vagrant.configure("2") do |config|
             if [[ ! -d nfs/common ]]
                 then
                     mkdir -p nfs/common
-                    chown lidong:lidong nfs/common
+                    chown #{user}:#{user} nfs/common
                 fi
         SHELL
-        config.vm.synced_folder "common", "/home/lidong/nfs/common", owner: "lidong", group: "lidong"
+        config.vm.synced_folder "common", "/home/#{user}/nfs/common", owner: "#{user}", group: "#{user}"
     end
 end

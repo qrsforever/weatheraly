@@ -1,0 +1,2 @@
+采用HDFS High Availability Using the Quorum Journal Manager 方案来实现HA.
+
