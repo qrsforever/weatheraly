@@ -2,14 +2,9 @@
 
 bin=`dirname ${BASH_SOURCE-$0}`
 topdir=`cd $bin/../; pwd`
-
 run_env=". /data/opt/env.sh"
 
-print_with_color(){
-    echo -e "# //////////////////////////////////////////////////"
-    echo -e "# \t \e[0;34;1m$1\e[0m"
-    echo -e "# //////////////////////////////////////////////////"
-}
+. $bin/shell_utils.sh
 
 # 1. 停止zookeeper
 __stop_zookeeper() {

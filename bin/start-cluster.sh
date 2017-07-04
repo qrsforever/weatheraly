@@ -2,16 +2,11 @@
 
 bin=`dirname ${BASH_SOURCE-$0}`
 topdir=`cd $bin/../; pwd`
-
 run_env=". /data/opt/env.sh"
 
-# ZooKeeper -> JournalNode (hadoop) -> NameNode (Hadoop) -> DataNode (Hadoop) -> 主 ResourceManager/NodeManager (Hadoop) -> 备份 ResourceManager (Hadoop) -> ZKFC (Hadoop) -> MapReduce JobHistory (Hadoop) -> 主 Hmaster/HRegionServer (hbase) ->备份 Hmaster 
+. $bin/shell_utils.sh
 
-print_with_color(){
-    echo -e "# //////////////////////////////////////////////////"
-    echo -e "# \t \e[0;34;1m$1\e[0m"
-    echo -e "# //////////////////////////////////////////////////"
-}
+# ZooKeeper -> JournalNode (hadoop) -> NameNode (Hadoop) -> DataNode (Hadoop) -> 主 ResourceManager/NodeManager (Hadoop) -> 备份 ResourceManager (Hadoop) -> ZKFC (Hadoop) -> MapReduce JobHistory (Hadoop) -> 主 Hmaster/HRegionServer (hbase) ->备份 Hmaster 
 
 # 1. 启动zookeeper
 __start_zookeeper() {
