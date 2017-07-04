@@ -5,51 +5,71 @@ topdir=`cd $bin/../; pwd`
 
 run_env=". /data/opt/env.sh"
 
-# 启动顺序: zookeeper journalnode namenode datanode resourcemanager
+# ZooKeeper -> JournalNode (hadoop) -> NameNode (Hadoop) -> DataNode (Hadoop) -> 主 ResourceManager/NodeManager (Hadoop) -> 备份 ResourceManager (Hadoop) -> ZKFC (Hadoop) -> MapReduce JobHistory (Hadoop) -> 主 Hmaster/HRegionServer (hbase) ->备份 Hmaster 
+
+print_with_color(){
+    echo -e "# //////////////////////////////////////////////////"
+    echo -e "# \t \e[0;34;1m$1\e[0m"
+    echo -e "# //////////////////////////////////////////////////"
+}
 
 # 1. 启动zookeeper
 __start_zookeeper() {
     echo "-----> $FUNCNAME"
+
+    print_with_color "启动zkServer(所有安装zookeeper机群上)"
     ssh node2 "$run_env; zkServer.sh start"
     ssh node3 "$run_env; zkServer.sh start"
     ssh node4 "$run_env; zkServer.sh start"
+
     sleep 6
+
+    print_with_color "查看zkServer启动状态"
     ssh node2 "$run_env; zkServer.sh status" 
     ssh node3 "$run_env; zkServer.sh status" 
     ssh node4 "$run_env; zkServer.sh status" 
 
-    # 查看根目录
-    ssh node2 "$run_env; hdfs zkfc -formatZK"
+    print_with_color "(首次需要)格式化zookeeper集群(任意一台namenode)"
+    ssh node0 "$run_env; hdfs zkfc -formatZK -nonInteractive"
     ssh node0 "$run_env; zkCli.sh -server node2 ls /" 
 }
 
-# 2. 启动namenode日志同步服务
+# 2. 启动namenode日志同步服务(在格式化namenode之前)
 __start_journalnode() {
     echo "-----> $FUNCNAME"
+
+    print_with_color "启动JournalNode集群(所有journalnode集群上)"
     ssh node2 "$run_env; hadoop-daemon.sh start journalnode"
     ssh node3 "$run_env; hadoop-daemon.sh start journalnode"
     ssh node4 "$run_env; hadoop-daemon.sh start journalnode"
-    # 另一中前台启动: hdfs journalnode
 }
 
 # 3. 启动分布式系统 
 __start_hadoop() {
     echo "-----> $FUNCNAME"
-    ssh node0 "$run_env; hdfs namenode -format"
+
+    print_with_color "(首次需要)格式化并启动NameNode集群(在其中一台namenode机器上)"
+    ssh node0 "$run_env; hdfs namenode -format -nonInteractive"
     ssh node0 "$run_env; hadoop-daemon.sh start namenode"
 
-    ssh node1 "$run_env; hdfs namenode -bootstrapStandby"
+    print_with_color "同步NameNode元数据到另一台机器上, 并启动"
+    ssh node1 "$run_env; hdfs namenode -bootstrapStandby -nonInteractive"
     ssh node1 "$run_env; hadoop-daemon.sh start namenode"
 
+    print_with_color "启动集群上所有的DataNode节点(在任意台namenode上执行)"
+    ssh node0 "$run_env; hadoop-daemons.sh start datanode"
+
+    print_with_color "启动YARN(RM + NM), 并在另一台上单独启动RM"
+    ssh node0 "$run_env; start-yarn.sh"
+    ssh node5 "$run_env; yarn-daemon.sh start resourcemanager"
+
+    print_with_color "启动ZKFC(在所有的namenode集群上)"
     ssh node0 "$run_env; hadoop-daemon.sh start zkfc"
     ssh node1 "$run_env; hadoop-daemon.sh start zkfc"
 
-    ssh node0 "$run_env; hadoop-daemons.sh start datanode"
-
-    # RM + NM
-    ssh node0 "$run_env; start-yarn.sh"
-    # 备用RM
-    ssh node5 "$run_env; yarn-daemon.sh start resourcemanager"
+    print_with_color "开启MR历史日志服务"
+    ssh node0 "$run_env; mr-jobhistory-daemon.sh start historyserver"
+    ssh node1 "$run_env; mr-jobhistory-daemon.sh start historyserver"
 }
 
 __main() {

@@ -40,8 +40,15 @@ fi
 COMMON_DIR=$CONF_DIR/common
 
 ###### 系统设置 ######
-__system_conf() 
-{
+__system_conf() {
+
+    if (( $cleanup == 1 ))
+    then
+        rm -f $rsa_file
+        rm -f $ssh_conf
+        rm -f /opt/ws
+    fi
+
     if [[ ! -f $rsa_file ]]
     then
         ssh-keygen -t rsa -f $rsa_file -P ""
@@ -50,7 +57,9 @@ __system_conf()
 
     if [[ ! -f $ssh_conf ]]
     then
+        # 登录时是否询问 (no)
         echo "StrictHostKeyChecking no" >  $ssh_conf
+        # 表示隐藏known_hosts文件
         echo "UserKnownHostsFile /dev/null" >> $ssh_conf
         chown $user:$user $ssh_conf
     fi
@@ -162,7 +171,7 @@ __main() {
         echo "cleanup: *** "
         if [[ -d $WS_DIR ]]
         then
-        rm -rf $WS_DIR
+            rm -rf $WS_DIR
         fi
 
         if [[ -f $whoami ]]
