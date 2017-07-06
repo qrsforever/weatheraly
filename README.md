@@ -32,3 +32,4 @@ start-vm.sh: 启动虚拟机
 start-cluster.sh: 启动集群中必要的服务
 stop-cluster.sh: 停止集群中的服务
 chk-status.py: 查看集群中的状态，如jps.
+
