@@ -3,7 +3,7 @@
 
 <configuration>
 
-    <!-- 指定hdfs的nameservice为bigha(hdfs-site.xml指定) -->
+    <!-- 指定hdfs的nameservice为bigha(hdfs-site.xml指定), 端口号默认9000 -->
     <property>
         <name>fs.defaultFS</name>
         <value>hdfs://bigha</value>

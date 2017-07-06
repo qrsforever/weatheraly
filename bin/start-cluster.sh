@@ -4,6 +4,8 @@ bin=`dirname ${BASH_SOURCE-$0}`
 topdir=`cd $bin/../; pwd`
 run_env=". /data/opt/env.sh"
 
+alias ssh='ssh -o LogLevel=ERROR'
+
 . $bin/shell_utils.sh
 
 # ZooKeeper -> JournalNode (hadoop) -> NameNode (Hadoop) -> DataNode (Hadoop) -> 主 ResourceManager/NodeManager (Hadoop) -> 备份 ResourceManager (Hadoop) -> ZKFC (Hadoop) -> MapReduce JobHistory (Hadoop) -> 主 Hmaster/HRegionServer (hbase) ->备份 Hmaster 
@@ -48,7 +50,7 @@ __start_hadoop() {
     ssh node0 "$run_env; hadoop-daemon.sh start namenode"
 
     print_with_color "同步NameNode元数据到另一台机器上, 并启动"
-    ssh node1 "$run_env; hdfs namenode -bootstrapStandby -nonInteractive"
+    ssh node1 "$run_env; hdfs namenode -bootstrapStandby -force"
     ssh node1 "$run_env; hadoop-daemon.sh start namenode"
 
     print_with_color "启动集群上所有的DataNode节点(在任意台namenode上执行)"
@@ -67,11 +69,25 @@ __start_hadoop() {
     ssh node1 "$run_env; mr-jobhistory-daemon.sh start historyserver"
 }
 
+# 4. 启动HBase
+__start_hbase() {
+    echo "-----> $FUNCNAME"
+    
+    print_with_color "启动启动整个集群(HMaster和HRegionServer)"
+    ssh node1 "$run_env; start-hbase.sh"
+    
+    print_with_color "启动另一个HMaster"
+    ssh node5 "$run_env; hbase-daemon.sh start master"
+}
+
 __main() {
     echo "-----> $FUNCNAME"
     __start_zookeeper
     __start_journalnode
     __start_hadoop
+    __start_hbase
 }
 
 __main
+
+unalias ssh

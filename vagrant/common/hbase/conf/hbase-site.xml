@@ -1,0 +1,111 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<configuration>
+    <!-- 存储在HADOOP HDFS上文件根目录路径, 如果不是HA集群, 必须与core-site.xml文件配置保持完全一致 -->
+    <property>
+        <name>hbase.rootdir</name>
+        <value>hdfs://bigha/hbase</value>
+    </property>
+
+    <!-- 只需端口即可，不必再写主机名称了！-->
+    <property>
+        <name>hbase.master</name>
+        <value>60000</value>
+    </property>
+
+    <!-- 采用分布式模式 -->
+    <property>
+        <name>hbase.cluster.distributed</name>
+        <value>true</value>
+    </property>
+
+    <!-- zookeeper地址，端口(默认为2181) -->
+    <property>
+        <name>hbase.zookeeper.quorum</name>
+        <value>node2,node3,node4</value>
+    </property>
+
+    <!-- hbase临时文件存储目录，比如一些数据表的预分区信息等等 -->
+    <property>
+        <name>hbase.tmp.dir</name>
+        <value>/opt/ws/hbase/tmp</value>
+    </property>
+
+    <!-- zookeeper存储数据位置(与zoo.cfg保持一致) -->
+    <property>
+        <name>hbase.zookeeper.property.dataDir</name>
+        <value>/opt/ws/zookeeper/data</value>
+    </property>
+
+    <!-- 指定zk的连接端口 -->
+    <property>
+        <name>hbase.zookeeper.property.clientPort</name>
+        <value>2181</value>
+    </property>
+
+    <!-- 设置Master并发最大线程数 -->
+    <property>
+        <name>hbase.regionserver.handler.count</name>
+        <value>10</value>
+    </property>
+
+    <!-- RegionServer与Zookeeper间的连接超时时间。
+      当超时时间到后，ReigonServer会被Zookeeper从RS集群清单中移除，HMaster收到移除通知后，
+      会对这台server负责的regions重新balance，让其他存活的RegionServer接管. -->
+    <property>
+        <name>zookeeper.session.timeout</name>
+        <value>30000</value>
+    </property>
+
+    <!--一个edit版本在内存中的cache时长，默认3600000毫秒-->
+    <property>
+        <name>hbase.regionserver.optionalcacheflushinterval</name>
+        <value>7200000</value>
+    </property>
+
+    <!--分配给HFile/StoreFile的block cache占最大堆(-Xmx setting)的比例。默认0.4意思是分配40%，设置为0就是禁用，但不推荐。-->
+    <property>
+        <name>hfile.block.cache.size</name>
+        <value>0.3</value>
+    </property>
+
+    <!-- 设置HStoreFile的大小，当大于这个数时，就会split 成两个文件 -->
+    <property>
+        <name>hbase.hregion.max.filesize</name>
+        <value>134217728</value>
+    </property>
+
+    <!--设置memstore的大小，当大于这个值时，写入磁盘-->
+    <property>
+        <name>hbase.hregion.memstore.flush.size</name>
+        <value>134217728</value>
+    </property>
+
+    <!-- 设置HDFS客户端最大超时时间，尽量改大 -->
+    <property>
+        <name>dfs.client.socket-timeout</name>
+        <value>60000 </value>
+    </property>
+
+<!-- 端口默认:
+   -     <property >
+   -         <name>hbase.master.port</name>
+   -         <value>60000</value>
+   -     </property>
+   - 
+   -     <property>
+   -         <name>hbase.master.info.port</name>
+   -         <value>60010</value>
+   -     </property>
+   - 
+   -     <property>
+   -         <name>hbase.regionserver.port</name>
+   -         <value>60020</value>
+   -     </property>
+   - 
+   -     <property>
+   -         <name>hbase.regionserver.info.port</name>
+   -         <value>60030</value>
+   -     </property> 
+   -  -->
+</configuration>

@@ -5,10 +5,12 @@
 # NM: node manager
 # ZK: zookeeper service
 # FC: DFSZKFailoverController
+# HM: HMaster
+# HR: HRegionServer
 
 node0:NN RM FC
-node1:NN FC
-node2:ZK JN NM DN
-node3:ZK JN NM DN
-node4:ZK JN NM DN
-node5:RM
+node1:NN FC HM
+node2:ZK JN NM DN HR 
+node3:ZK JN NM DN HR
+node4:ZK JN NM DN HR
+node5:RM HM

@@ -5,20 +5,16 @@
 cleanup=$1
 hn=$2
 
-if [[ x$hn == x ]]
-then
-    echo "user: script.sh hostname"
-    echo "Not run by vagrant, host mode"
-fi
-
 if [[ x$cleanup == x ]]
 then
     cleanup=0
 fi
 
 user=lidong
-rsa_file=/home/$user/.ssh/id_rsa
-ssh_conf=/home/$user/.ssh/config
+ssh_dir="/home/$user/.ssh/"
+ssh_cnf="config"
+ssh_key="id_rsa"
+
 whoami=/home/$user/whoami.txt
 
 WS_DIR=/home/$user/workspace
@@ -26,106 +22,92 @@ CONF_DIR=/home/$user/nfs
 
 HADOOP_HOME=/opt/hadoop
 ZOOKEEPER_HOME=/opt/zookeeper
+HBASE_HOME=/opt/hbase
 
 HADOOP_DIFF=$CONF_DIR/hadoop
-ZOOKEEPER_DIFF=/home/$user/nfs/zookeeper
+ZOOKEEPER_DIFF=$CONF_DIR/nfs/zookeeper
+HBASE_DIFF=$CONF_DIR/nfs/hbase
 
 if [[ x$hn == x ]]
 then
+    hn=node0
     CONF_DIR=`pwd`
-    HADOOP_DIFF=$CONF_DIR/node0/hadoop
-    ZOOKEEPER_DIFF=$CONF_DIR/node0/zookeeper
+    HADOOP_DIFF=$CONF_DIR/$hn/hadoop
+    ZOOKEEPER_DIFF=$CONF_DIR/$hn/zookeeper
 fi
 
 COMMON_DIR=$CONF_DIR/common
 
 ###### 系统设置 ######
 __system_conf() {
+    echo "-----> $FUNCNAME"
+
+    if [[ ! -f /home/$user/.ssh.tar.gz ]]
+    then
+        cd /home/$user/
+        tar zcf .ssh.tar.gz .ssh
+        cd -
+    fi
 
     if (( $cleanup == 1 ))
     then
-        rm -f $rsa_file
-        rm -f $ssh_conf
+        rm -f $ssh_dir/$ssh_key
+        rm -f $ssh_dir/$ssh_cnf
         rm -f /opt/ws
     fi
 
-    if [[ ! -f $rsa_file ]]
+    if [ ! -f $ssh_dir/$ssh_key -a $USER == "root" ]
     then
-        ssh-keygen -t rsa -f $rsa_file -P ""
-        chown $user:$user $rsa_file
+        ssh-keygen -t rsa -f $ssh_dir/$ssh_key -P ""
+    else 
+        cp $COMMON_DIR/linux/ssh/* /home/$user/.ssh
     fi
 
-    if [[ ! -f $ssh_conf ]]
+    if [[ ! -f $ssh_dir/$ssh_cnf ]]
     then
         # 登录时是否询问 (no)
-        echo "StrictHostKeyChecking no" >  $ssh_conf
+        echo "StrictHostKeyChecking no" >  $ssh_dir/$ssh_cnf
         # 表示隐藏known_hosts文件
-        echo "UserKnownHostsFile /dev/null" >> $ssh_conf
-        chown $user:$user $ssh_conf
+        echo "UserKnownHostsFile /dev/null" >> $ssh_dir/$ssh_cnf
+        # 减少SSH带来的提示
+        echo "LogLevel FATAL" >> $ssh_dir/$ssh_cnf
     fi
+    chown $user:$user $ssh_dir -R
 
     if [[ ! -d $WS_DIR ]]
     then
         mkdir -p $WS_DIR
-        chown $user:$user $WS_DIR
+        sudo chown $user:$user $WS_DIR
     fi
 
     if [[ ! -L /opt/ws ]]
     then
-        ln -s $WS_DIR /opt/ws
+        # 一些配置文件中使用/opt/ws/路径, 如core-site.xml
+        sudo ln -s $WS_DIR /opt/ws
     fi
 
     # 关闭防火强
-    ufw disable
+    sudo ufw disable
 
-    # 更改/etc/配置
+    # 更改/etc/配置 (物理机需要自己添加hosts)
     if [[ -d $COMMON_DIR/linux/etc/ ]]
     then
-        cp $COMMON_DIR/linux/etc/* /etc
+        if [ $USER == "root" ]
+        then
+            cp $COMMON_DIR/linux/etc/* /etc
+        else
+            files=`ls $COMMON_DIR/linux/etc/`
+            echo "WANRNING! files underside NEED MELD TO YOUR HOST MENUALY"
+            echo $files
+            echo "WANRNING! files above NEED MELD TO YOUR HOST MENUALY"
+        fi
     fi
-
-    tasks=(`cat $COMMON_DIR/hosts-duty.txt | grep $hn | cut -d\: -f2`)
-}
-
-###### Hadoop配置 ######
-__hadoop_conf() {
-    # 软连接: /opt/hadoop --> /data/opt/hadoop/hadoop-2.8.0
-    cd $HADOOP_HOME
-
-    if [[ ! -f etc.tar.gz ]]
-    then
-        tar zcf etc.tar.gz etc
-    fi
-    rm -rf logs
-    rm -rf etc
-    tar zxf etc.tar.gz 
-
-    if [[ ! -d $WS_DIR/hadoop ]]
-    then
-        mkdir -p $WS_DIR/hadoop/tmp
-        mkdir -p $WS_DIR/hadoop/logs
-    fi
-
-    # 先copy公共配置
-    if [[ -d $COMMON_DIR/hadoop/etc ]]
-    then
-        cp -arpf $COMMON_DIR/hadoop/etc/* etc/hadoop
-    fi
-    chown -R $user:$user $WS_DIR/hadoop
-
-    # 在copy差异配置
-    if [[ -d $HADOOP_DIFF/etc ]]
-    then
-        cp -arpf $HADOOP_DIFF/etc/* etc/hadoop
-    fi
-    chown -R $user:$user etc
-
-    cd -
 }
 
 ###### Zookeeper配置 ######
 __zookeeper_conf() {
-    # 软连接: /opt/zookeeper --> /data/opt/zookeeper/zookeeper-3.4.10
+    echo "-----> $FUNCNAME"
+
     cd $ZOOKEEPER_HOME
 
     if [[ ! -f conf.tar.gz ]]
@@ -161,10 +143,83 @@ __zookeeper_conf() {
     fi
     chown -R $user:$user conf
 
-    cd -
+    cd - 1 &>/dev/null
+}
+
+###### Hadoop配置 ######
+__hadoop_conf() {
+    echo "-----> $FUNCNAME"
+
+    cd $HADOOP_HOME
+
+    if [[ ! -f etc.tar.gz ]]
+    then
+        tar zcf etc.tar.gz etc
+    fi
+    rm -rf logs
+    rm -rf etc
+    tar zxf etc.tar.gz 
+
+    if [[ ! -d $WS_DIR/hadoop ]]
+    then
+        mkdir -p $WS_DIR/hadoop/tmp
+        mkdir -p $WS_DIR/hadoop/logs
+    fi
+
+    # 先copy公共配置
+    if [[ -d $COMMON_DIR/hadoop/etc ]]
+    then
+        cp -arpf $COMMON_DIR/hadoop/etc/* etc/hadoop
+    fi
+    chown -R $user:$user $WS_DIR/hadoop
+
+    # 在copy差异配置
+    if [[ -d $HADOOP_DIFF/etc ]]
+    then
+        cp -arpf $HADOOP_DIFF/etc/* etc/hadoop
+    fi
+    chown -R $user:$user etc
+
+    cd - 1 &>/dev/null
+}
+
+__hbase_conf() {
+    echo "-----> $FUNCNAME"
+
+    cd $HBASE_HOME
+
+    if [[ ! -f conf.tar.gz ]]
+    then
+        tar zcf conf.tar.gz conf
+    fi
+    rm -rf conf
+    tar zxf conf.tar.gz 
+
+    if [[ ! -d $WS_DIR/hbase ]]
+    then
+        mkdir -p $WS_DIR/hbase/tmp
+        mkdir -p $WS_DIR/hbase/logs
+    fi
+
+    # 先copy公共配置
+    if [[ -d $COMMON_DIR/hadoop/etc ]]
+    then
+        cp -arpf $COMMON_DIR/hbase/conf/* conf
+    fi
+    chown -R $user:$user $WS_DIR/hbase
+
+    # 在copy差异配置
+    if [[ -d $HADOOP_DIFF/conf ]]
+    then
+        cp -arpf $HADOOP_DIFF/conf/* conf
+    fi
+    chown -R $user:$user conf
+
+    cd - 1 &>/dev/null
 }
 
 __main() {
+    echo "-----> $FUNCNAME"
 
     if (( $cleanup == 1 ))
     then
@@ -180,16 +235,10 @@ __main() {
         fi
     fi
 
-    if [[ x$hn != x ]]
-    then
-        __system_conf $hn
-    fi
+    __system_conf
+    __hadoop_conf
 
-    __hadoop_conf $hn
-
-    echo "# 注意启动顺序 " >> $whoami
-    echo "# zookeeper > journalnode > format > namenode > datanode " >> $whoami
-
+    tasks=(`cat $COMMON_DIR/hosts-duty.txt | grep $hn | cut -d\: -f2`)
 
     echo "###" > $whoami
     for t in ${tasks[@]}
@@ -201,7 +250,7 @@ __main() {
 
         if [[ x$t == x'ZK' ]]
         then
-            __zookeeper_conf $hn
+            __zookeeper_conf
             echo "Zookeeper node" >> $whoami
         fi
 
@@ -228,6 +277,18 @@ __main() {
         if [[ x$t == x'DN' ]]
         then
             echo "Data node" >> $whoami
+        fi
+
+        if [[ x$t == x'HM' ]]
+        then
+            __hbase_conf
+            echo "HMaster" >> $whoami
+        fi
+
+        if [[ x$t == x'HR' ]]
+        then
+            __hbase_conf
+            echo "HRegionServer" >> $whoami
         fi
     done
 }

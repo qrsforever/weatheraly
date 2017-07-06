@@ -50,8 +50,19 @@ __stop_hadoop() {
     ssh node1 "$run_env; hadoop-daemon.sh stop namenode"
 }
 
+__stop_hbase() {
+    echo "-----> $FUNCNAME"
+    
+    print_with_color "关闭整个集群(HMaster和HRegionServer)"
+    ssh node0 "$run_env; stop-hbase.sh"
+    
+    print_with_color "关闭另一个HMaster"
+    ssh node5 "$run_env; hbase-daemon.sh stop master"
+}
+
 __main() {
     echo "-----> $FUNCNAME"
+    __stop_hbase
     __stop_hadoop
     __stop_journalnode
     __stop_zookeeper

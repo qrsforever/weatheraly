@@ -133,4 +133,20 @@
         <value>1024</value>
     </property>    
 
+    <!-- 设置块大小 -->
+    <property>
+        <name>dfs.blocksize</name>
+        <value>2097152</value>
+    </property>
+
+<!--     <property>
+   -         <name>dfs.namenode.fs-limits.min-block-size</name>
+   -         <value>1048576</value>
+   -     </property>
+   - 
+   -     <property>
+   -         <name>dfs.namenode.fs-limits.max-blocks-per-file</name>
+   -         <value>1048576</value>
+   -     </property> -->
+
 </configuration>
