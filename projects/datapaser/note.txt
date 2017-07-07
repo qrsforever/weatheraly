@@ -1,0 +1,13 @@
+1. 创建mvn工作环境 
+    # mvn archetype:generate -DgroupId=com.weatheraly.bigdata -DartifactId=datapaser -DpackageName=com.weatheraly.bigdata -DinteractiveMode=false
+
+2. 生成.classpath .project
+    # mvn eclipse:eclipse
+
+3. 导入vim elimd工程(先启动eclimd)
+    vim-cmd: :ProjectImport .
+
+4. HDFS存储
+    hdfs dfs -rm -r -skipTrash /user/lidong/weatheraly/dataparse/output
+    hdfs dfs -mkdir -p /user/lidong/weatheraly/dataparse/input
+    hdfs dfs -mkdir -p /user/lidong/weatheraly/dataparse/output

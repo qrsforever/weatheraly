@@ -1,15 +1,5 @@
 采用HDFS High Availability Using the Quorum Journal Manager 方案来实现HA.
 
-Cluster布局
-
-        NN  RM  NM  DN  JN  ZK  FC
-node0:  v   v                   v 
-node1:  v                       v
-node2:          v   v   v   v
-node3:          v   v   v   v
-node4:          v   v   v   v
-node5:      v
-
 基本环境配置
 
 Vagrant box (集成了Hadoop软件):
@@ -40,9 +30,14 @@ script.sh: 物理机和虚拟机都会执行，负责配置集群里的细节环
 
 start-vm.sh: 启动虚拟机
 
+stop-vm.sh: 挂起虚拟机
+
 start-cluster.sh: 启动集群中必要的服务
 
 stop-cluster.sh: 停止集群中的服务
 
 chk-status.py: 查看集群中的状态，如jps.
 
+open-browser.py: 打开浏览器显示相关配置状态
+
+更多see doc/UserGuider.txt

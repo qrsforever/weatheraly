@@ -1,0 +1,27 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <!-- 各种属性参考: https://maven.apache.org/pom.html -->
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- 公司网址 -->
+    <groupId>com.weatheraly.bigdata</groupId>
+    <!-- 项目名 -->
+    <artifactId>root-meta</artifactId>
+    <!-- 大版本.分支版本.小版本-快照SNAPSHOT、内部测试alpha、公测beta、稳定Release、正式发布GA -->
+    <version>1.0.0</version>
+    <!-- 打包类型 jar war zip pom等 -->
+    <packaging>pom</packaging>
+    <!-- 项目描述名 -->
+    <name>AWPF</name>
+    <!-- 项目地址 -->
+    <url>https://github.com/qrsforever/weatheraly</url>
+    <!-- 项目描述 -->
+    <description>Analyze weather to predict the furture</description>
+
+    <modules>
+        <module>maven</module>
+        <module>common</module>
+        <module>datapaser</module>
+    </modules>
+</project>

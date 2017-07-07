@@ -4,6 +4,14 @@ bin=`dirname ${BASH_SOURCE-$0}`
 topdir=`cd $bin/../; pwd`
 run_env=". /data/opt/env.sh"
 
+nff="-nonInteractive"
+
+if [[ x$1 != x ]]
+then
+    nff="-force"
+    echo "Format Node"
+fi
+
 alias ssh='ssh -o LogLevel=ERROR'
 
 . $bin/shell_utils.sh
@@ -27,7 +35,7 @@ __start_zookeeper() {
     ssh node4 "$run_env; zkServer.sh status" 
 
     print_with_color "(首次需要)格式化zookeeper集群(任意一台namenode)"
-    ssh node0 "$run_env; hdfs zkfc -formatZK -nonInteractive"
+    ssh node0 "$run_env; hdfs zkfc -formatZK $nff"
     ssh node0 "$run_env; zkCli.sh -server node2 ls /" 
 }
 
@@ -46,7 +54,8 @@ __start_hadoop() {
     echo "-----> $FUNCNAME"
 
     print_with_color "(首次需要)格式化并启动NameNode集群(在其中一台namenode机器上)"
-    ssh node0 "$run_env; hdfs namenode -format -nonInteractive"
+    # 如果重新格式化namenode会导致datanode的clusterID不匹配, 需要同步 
+    ssh node0 "$run_env; hdfs namenode -format $nff"
     ssh node0 "$run_env; hadoop-daemon.sh start namenode"
 
     print_with_color "同步NameNode元数据到另一台机器上, 并启动"
