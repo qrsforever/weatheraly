@@ -139,6 +139,12 @@
         <value>5242880</value>
     </property>
 
+    <!-- 设置日志节点写入超时时间 -->
+    <property>
+        <name>dfs.qjournal.write-txns.timeout.ms</name>
+        <value>300000</value>
+    </property>
+
 <!--     <property>
    -         <name>dfs.namenode.fs-limits.min-block-size</name>
    -         <value>1048576</value>

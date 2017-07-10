@@ -30,6 +30,8 @@ export JAVA_HOME=/opt/jdk
 # HA集群环境需要设置, 需要core-site.xml hdfs-site.xml两个文件
 export HBASE_CLASSPATH=/opt/hadoop/etc/hadoop/
 
+export HBASE_DISABLE_HADOOP_CLASSPATH_LOOKUP=true
+
 # The maximum amount of heap to use. Default is left to JVM default.
 # export HBASE_HEAPSIZE=1G
 

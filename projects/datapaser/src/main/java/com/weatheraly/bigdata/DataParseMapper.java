@@ -16,6 +16,6 @@ public class DataParseMapper extends Mapper<LongWritable, Text, Text, IntWritabl
         String line = value.toString();
         String data = line.substring(0, 105);
         System.out.println("### line[" + line + "] : " + data);
-        context.write(new Text("2017"), new IntWritable(100));
+        // context.write(new Text("2017"), new IntWritable(100));
     }
 }

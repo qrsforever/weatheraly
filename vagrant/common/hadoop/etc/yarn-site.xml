@@ -110,4 +110,58 @@
        -     <value>org.apache.hadoop.mapred.ShuffleHandler</value>
        - </property>     -->
 
+    <!-- 总的可用物理内存量，默认是8096 -->
+    <property>
+        <name>yarn.nodemanager.resource.memory-mb</name>
+        <value>1024</value>
+    </property>
+
+    <!-- 总的可用CPU数目，默认是8 -->
+    <property>
+        <name>yarn.nodemanager.resource.cpu-vcores</name>
+        <value>1</value>
+    </property>
+
+    <!-- 最小可申请内存量，默认是1024 -->
+    <property>
+        <name>yarn.scheduler.minimum-allocation-mb</name>
+        <value>512</value>
+    </property>
+
+    <!-- 最小可申请CPU数，默认是1 -->
+    <property>
+        <name>yarn.scheduler.minimum-allocation-vcores</name>
+        <value>1</value>
+    </property> 
+
+    <!-- 最大可申请内存量，默认是8096 -->
+    <property>
+        <name>yarn.scheduler.maximum-allocation-mb</name>
+        <value>1024</value>
+    </property>
+
+    <!-- 最大可申请CPU数，默认是4 -->
+    <property>
+        <name>yarn.scheduler.maximum-allocation-vcores</name>
+        <value>1</value>
+    </property>
+
+    <!-- 使能物理内存限制, 当大于mapreduce.reduce|map.memory.mb抛异常" -->
+    <property>
+        <name>yarn.nodemanager.pmem-check-enabled</name>
+        <value>true</value>
+    </property> 
+
+    <!-- 使能虚拟内存限制, 当大于yarn.nodemanager.vmem-pmem-ratio倍mapreduce.reduce|map.memory.mb抛异常 -->
+    <property>
+        <name>yarn.nodemanager.vmem-check-enabled</name>
+        <value>true</value>
+    </property> 
+
+    <!-- 设置虚拟内存与物理内存的倍数, 默认2.1 -->
+    <property>
+        <name>yarn.nodemanager.vmem-pmem-ratio</name>
+        <value>6.0</value>
+    </property>
+
 </configuration>

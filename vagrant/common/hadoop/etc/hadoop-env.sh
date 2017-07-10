@@ -43,7 +43,7 @@ for f in $HADOOP_HOME/contrib/capacity-scheduler/*.jar; do
 done
 
 # The maximum amount of heap to use, in MB. Default is 1000.
-#export HADOOP_HEAPSIZE=
+# export HADOOP_HEAPSIZE=1000
 #export HADOOP_NAMENODE_INIT_HEAPSIZE=""
 
 # Enable extra debugging of Hadoop's JAAS binding, used to set up
@@ -107,3 +107,5 @@ export HADOOP_SECURE_DN_PID_DIR=${HADOOP_PID_DIR}
 
 # A string representing this instance of hadoop. $USER by default.
 export HADOOP_IDENT_STRING=$USER
+
+export HADOOP_NAMENODE_OPTS="-Dcom.sun.management.jmxremote -XX:+UseConcMarkSweepGC -XX:ParallelGCThreads=8 -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=70 -Xms512M -Xmx512M -XX:NewSize=128M -XX:MaxNewSize=128M -verbose:gc -Xloggc:$HADOOP_LOG_DIR/gc.log-`date +'%Y%m%d%H%M'` -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+PrintGCDateStamps -XX:ErrorFile=$HADOOP_LOG_DIR/hs_err_pid%p.log -XX:+HeapDumpOnOutOfMemoryError $HADOOP_NAMENODE_OPTS"

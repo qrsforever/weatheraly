@@ -7,7 +7,15 @@
 3. 导入vim elimd工程(先启动eclimd)
     vim-cmd: :ProjectImport .
 
-4. HDFS存储
+4. 生成noaa天气数据
+    cd ../../bin; get-weather.py; cd -
+
+5. HDFS存储
     hdfs dfs -rm -r -skipTrash /user/lidong/weatheraly/dataparse/output
     hdfs dfs -mkdir -p /user/lidong/weatheraly/dataparse/input
-    hdfs dfs -mkdir -p /user/lidong/weatheraly/dataparse/output
+    hadoop fs -copyFromLocal ../../bin/noaa/ /user/lidong/weatheraly/dataparse/input/
+    hdfs dfs -ls weatheraly/dataparse/input/noaa
+
+6. 解析天气数据
+    hadoop jar target/datapaser-1.0.0.jar com.weatheraly.bigdata.DataParseApp weatheraly/dataparse/input/noaa/2017/*.gz weatheraly/dataparse/output
+    hadoop jar target/datapaser-1.0.0.jar com.weatheraly.bigdata.DataParseApp weatheraly/dataparse/input/noaa/**/*.gz weatheraly/dataparse/output

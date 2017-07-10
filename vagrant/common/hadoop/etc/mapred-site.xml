@@ -20,4 +20,43 @@
         <value>6</value>  
     </property>  
 
+    <!-- 实际物理内存量，默认是1024 -->
+    <property>
+        <name>mapreduce.map.memory.mb</name>
+        <value>512</value>
+    </property> 
+
+    <property>
+        <name>mapreduce.reduce.memory.mb</name>
+        <value>512</value>
+    </property> 
+
+    <!-- 设置每个任务的JVM参数, 默认是-Xmx200m (80% of memory.mb) -->
+    <property>
+        <name>mapreduce.map.java.opts</name>
+        <value>-Xmx200m</value>
+    </property>
+
+    <property>
+        <name>mapreduce.reduce.java.opts</name>
+        <value>-Xmx200m</value>
+    </property>
+
+    <!-- CPU数目，默认是1 -->
+    <!-- <property>
+       -     <name>mapreduce.map.cpu.vcores</name>
+       -     <value>1</value>
+       - </property>  -->
+
+    <!-- <property>
+       -     <name>mapreduce.reduce.cpu.vcores</name>
+       -     <value>1</value>
+       - </property>  -->
+
+    <!-- 设置AppMaster内存 -->
+    <property>
+        <name>yarn.app.mapreduce.am.resource.mb</name>
+        <value>512</value>
+    </property>
+
 </configuration>

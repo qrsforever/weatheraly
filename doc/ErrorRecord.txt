@@ -1,0 +1,66 @@
+1. NameNode挂掉
+  错误日志:
+    2017-07-10 13:10:59,325 FATAL org.apache.hadoop.hdfs.server.namenode.FSEditLog: Error: flush failed for required journal (JournalAndStream(mgr=QJM to [192.168.1.202:8485, 192.168.1.203:8485, 192.168.1.204:8485], stream=QuorumOutputStream starting at txid 2396))
+    java.io.IOException: Timed out waiting 20000ms for a quorum of nodes to respond.
+    	at org.apache.hadoop.hdfs.qjournal.client.AsyncLoggerSet.waitForWriteQuorum(AsyncLoggerSet.java:137)
+    	at org.apache.hadoop.hdfs.qjournal.client.QuorumOutputStream.flushAndSync(QuorumOutputStream.java:107)
+    	at org.apache.hadoop.hdfs.server.namenode.EditLogOutputStream.flush(EditLogOutputStream.java:113)
+    	at org.apache.hadoop.hdfs.server.namenode.EditLogOutputStream.flush(EditLogOutputStream.java:107)
+    	at org.apache.hadoop.hdfs.server.namenode.JournalSet$JournalSetOutputStream$8.apply(JournalSet.java:533)
+    	at org.apache.hadoop.hdfs.server.namenode.JournalSet.mapJournalsAndReportErrors(JournalSet.java:393)
+    	at org.apache.hadoop.hdfs.server.namenode.JournalSet.access$100(JournalSet.java:57)
+    	at org.apache.hadoop.hdfs.server.namenode.JournalSet$JournalSetOutputStream.flush(JournalSet.java:529)
+    	at org.apache.hadoop.hdfs.server.namenode.FSEditLog.logSync(FSEditLog.java:707)
+    	at org.apache.hadoop.hdfs.server.namenode.FSEditLog.logSyncAll(FSEditLog.java:604)
+    	at org.apache.hadoop.hdfs.server.namenode.FSEditLog.endCurrentLogSegment(FSEditLog.java:1346)
+    	at org.apache.hadoop.hdfs.server.namenode.FSEditLog.rollEditLog(FSEditLog.java:1279)
+    	at org.apache.hadoop.hdfs.server.namenode.FSImage.rollEditLog(FSImage.java:1227)
+    	at org.apache.hadoop.hdfs.server.namenode.FSNamesystem.rollEditLog(FSNamesystem.java:5056)
+    	at org.apache.hadoop.hdfs.server.namenode.NameNodeRpcServer.rollEditLog(NameNodeRpcServer.java:1216)
+    	at org.apache.hadoop.hdfs.protocolPB.NamenodeProtocolServerSideTranslatorPB.rollEditLog(NamenodeProtocolServerSideTranslatorPB.java:141)
+    	at org.apache.hadoop.hdfs.protocol.proto.NamenodeProtocolProtos$NamenodeProtocolService$2.callBlockingMethod(NamenodeProtocolProtos.java:12025)
+    	at org.apache.hadoop.ipc.ProtobufRpcEngine$Server$ProtoBufRpcInvoker.call(ProtobufRpcEngine.java:447)
+    	at org.apache.hadoop.ipc.RPC$Server.call(RPC.java:989)
+    	at org.apache.hadoop.ipc.Server$RpcCall.run(Server.java:845)
+    	at org.apache.hadoop.ipc.Server$RpcCall.run(Server.java:788)
+    	at java.security.AccessController.doPrivileged(Native Method)
+    	at javax.security.auth.Subject.doAs(Subject.java:422)
+    	at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1807)
+    	at org.apache.hadoop.ipc.Server$Handler.run(Server.java:2455)
+    2017-07-10 13:10:59,326 WARN org.apache.hadoop.hdfs.qjournal.client.QuorumJournalManager: Aborting QuorumOutputStream starting at txid 2396
+    2017-07-10 13:10:59,326 INFO org.apache.hadoop.util.ExitUtil: Exiting with status 1
+    2017-07-10 13:10:59,329 INFO org.apache.hadoop.hdfs.server.namenode.NameNode: SHUTDOWN_MSG: 
+    /************************************************************
+    SHUTDOWN_MSG: Shutting down NameNode at localhost/127.0.0.1
+    ************************************************************/
+
+    解决:
+        https://community.hortonworks.com/questions/38523/name-node-instability-flush-failed-for-required-jo.html
+        调整内存大小
+
+2. mapreduce内存配置错误
+    错误日志:
+    17/07/10 17:22:43 INFO mapreduce.JobSubmitter: Cleaning up the staging area /tmp/hadoop-yarn/staging/lidong/.staging/job_1499678282034_0001
+    Exception in thread "main" java.io.IOException: org.apache.hadoop.yarn.exceptions.InvalidResourceRequestException: Invalid resource request, requested memory < 0, or requested memory > max configured, requestedMemory=1536, maxMemory=1024
+	    at org.apache.hadoop.yarn.server.resourcemanager.scheduler.SchedulerUtils.validateResourceRequest(SchedulerUtils.java:279)
+	    at org.apache.hadoop.yarn.server.resourcemanager.scheduler.SchedulerUtils.normalizeAndValidateRequest(SchedulerUtils.java:248)
+	    at org.apache.hadoop.yarn.server.resourcemanager.scheduler.SchedulerUtils.normalizeAndValidateRequest(SchedulerUtils.java:219)
+	    at org.apache.hadoop.yarn.server.resourcemanager.RMAppManager.validateAndCreateResourceRequest(RMAppManager.java:402)
+	    at org.apache.hadoop.yarn.server.resourcemanager.RMAppManager.createAndPopulateNewRMApp(RMAppManager.java:341)
+	    at org.apache.hadoop.yarn.server.resourcemanager.RMAppManager.submitApplication(RMAppManager.java:284)
+	    at org.apache.hadoop.yarn.server.resourcemanager.ClientRMService.submitApplication(ClientRMService.java:618)
+	    at org.apache.hadoop.yarn.api.impl.pb.service.ApplicationClientProtocolPBServiceImpl.submitApplication(ApplicationClientProtocolPBServiceImpl.java:257)
+	    at org.apache.hadoop.yarn.proto.ApplicationClientProtocol$ApplicationClientProtocolService$2.callBlockingMethod(ApplicationClientProtocol.java:499)
+	    at org.apache.hadoop.ipc.ProtobufRpcEngine$Server$ProtoBufRpcInvoker.call(ProtobufRpcEngine.java:447)
+	    at org.apache.hadoop.ipc.RPC$Server.call(RPC.java:989)
+	    at org.apache.hadoop.ipc.Server$RpcCall.run(Server.java:845)
+	    at org.apache.hadoop.ipc.Server$RpcCall.run(Server.java:788)
+	    at java.security.AccessController.doPrivileged(Native Method)
+	    at javax.security.auth.Subject.doAs(Subject.java:422)
+	    at org.apache.hadoop.security.UserGroupInformation.doAs(UserGroupInformation.java:1807)
+	    at org.apache.hadoop.ipc.Server$Handler.run(Server.java:2455)
+
+    解决:
+        http://wenda.chinahadoop.cn/question/2862
+        最大请求内存比实际设置的物理内存大, 矛盾产生
+        调整内存大小

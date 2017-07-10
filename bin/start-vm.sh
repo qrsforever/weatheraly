@@ -28,17 +28,19 @@ __ssh_conf()
     cp /tmp/authorized_keys  $ssh_dir
 }
 
+$topdir/bin/stop-cluster.sh
+
 cd $vagrant_dir
 
 # 带有参数1， 清楚所有集群建立的数据，重新开始(或者第一次启动)
 if [[ x$1 == x1 ]]
 then
     export CLEANUP=1;
-    vagrant halt;
-    ../vagrant/script.sh 1
 else
     export CLEANUP=0;
 fi
+
+../vagrant/script.sh $CLEANUP
 
 # 启动虚拟机, 不要直接执行vagrant up --provision, 否则script.sh被执行多次, Vagrant 自身Bug
 for i in `seq $vm_num`
