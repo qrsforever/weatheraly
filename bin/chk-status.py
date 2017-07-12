@@ -23,7 +23,7 @@ def _chk_ulimit_status(id):
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print("User: ", sys.argv[0], " [jps|ulimit]")
+        print("Use: ", sys.argv[0], " [jps|ulimit]")
         sys.exit(0)
 
     arg = sys.argv[1] 

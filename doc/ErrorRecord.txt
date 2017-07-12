@@ -64,3 +64,33 @@
         http://wenda.chinahadoop.cn/question/2862
         最大请求内存比实际设置的物理内存大, 矛盾产生
         调整内存大小
+
+
+3. Logs页面打不开:
+    错误提示:
+        Failed redirect for container_1499824754337_0001_01_000001
+        Failed while trying to construct the redirect url to the log server. Log Server url may not be configured
+        java.lang.Exception: Unknown container. Container either has not started or has already completed or doesn't belong to this node at all.
+
+    解决:
+        配置属性:yarn.log.server.url 
+
+4. Avro引入mapreduce jar包,错误:
+    错误提示:
+        java.lang.RuntimeException: java.lang.ClassNotFoundException: Class org.apache.avro.mapreduce.AvroKeyOutputFormat not found
+
+    解决:
+        (写到hadoop-evn.sh)
+        export HADOOP_USER_CLASSPATH_FIRST=true
+        export AVRO_VER=1.8.2
+        export HADOOP_CLASSPATH="$AVRO_HOME/avro-${AVRO_VER}.jar:$AVRO_HOME/avro-mapred-${AVRO_VER}-hadoop2.jar"
+        同时-libjars指定(或许是hadoop的bug)
+        hadoop jar target/datapaser-1.0.0.jar com.weatheraly.bigdata.DataParseApp -libjars xxx1.jar:xxx2.jar inputdir outputdir
+
+5. Avro的jar包版本不统一
+    错误提示:
+        Error: org.apache.avro.generic.GenericData.createDatumWriter(Lorg/apache/avro/Schema;)Lorg/apache/avro/io/DatumWriter;
+    
+    解决:
+        Hadoop2.8版本自带avro版本1.7.4, 项目中使用1.8.2, 而createDatumWriter函数再1.8.2中引入.
+        最简单的方式直接替换掉原来的

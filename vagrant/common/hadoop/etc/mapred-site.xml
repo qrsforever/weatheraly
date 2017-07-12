@@ -59,4 +59,15 @@
         <value>512</value>
     </property>
 
+    <property>
+        <name>mapreduce.jobhistory.address</name>
+        <value>node0:10020</value>
+    </property>
+
+    <!-- 设置WEB访问jobhistory -->
+    <property>
+        <name>mapreduce.jobhistory.webapp.address</name>
+        <value>node0:19888</value>
+    </property>
+
 </configuration>

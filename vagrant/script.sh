@@ -2,6 +2,8 @@
 
 ########### 此脚本会被vagrant调用， 修改慎重
 
+. /data/opt/env.sh
+
 cleanup=$1
 hn=$2
 
@@ -23,10 +25,12 @@ CONF_DIR=/home/$user/nfs
 HADOOP_HOME=/opt/hadoop
 ZOOKEEPER_HOME=/opt/zookeeper
 HBASE_HOME=/opt/hbase
+AVRO_HOME=/opt/avro
 
 HADOOP_DIFF=$CONF_DIR/hadoop
 ZOOKEEPER_DIFF=$CONF_DIR/nfs/zookeeper
 HBASE_DIFF=$CONF_DIR/nfs/hbase
+AVRO_VER=1.8.2
 
 if [[ x$hn == x ]]
 then
@@ -218,6 +222,20 @@ __hbase_conf() {
     cd - 1 &>/dev/null
 }
 
+__avro_conf() {
+    echo "-----> $FUNCNAME"
+    cd $HADOOP_HOME/share/hadoop/common/lib
+    if [[ -f avro-1.7.4.jar ]]
+    then
+        gzip avro-1.7.4.jar
+    else
+        cp $AVRO_HOME/avro-${AVRO_VER}.jar .
+        cp $AVRO_HOME/avro-mapred-${AVRO_VER}-hadoop2.jar .
+        cp $AVRO_HOME/avro-tools-${AVRO_VER}.jar ../../tools/lib
+    fi
+    cd - 1 &>/dev/null
+}
+
 __main() {
     echo "-----> $FUNCNAME"
 
@@ -237,6 +255,7 @@ __main() {
 
     __system_conf
     __hadoop_conf
+    __avro_conf
 
     tasks=(`cat $COMMON_DIR/hosts-duty.txt | grep $hn | cut -d\: -f2`)
 

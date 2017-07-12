@@ -1,0 +1,12 @@
+{ "type": "record",
+  "name": "NoaaRecord",
+  "namespace": "noaarecord.avro",
+  "fields" : [
+              {"name": "observationTime", "type": "string", "default": -1},
+              {"name": "directionAngle", "type": "int", "default": -1},
+              {"name": "windSpeedRate", "type": "int", "default": -1},
+              {"name": "skyHeightDimension", "type": "int", "default": -1},
+              {"name": "skyDistanceDimension", "type": "int", "default": -1},
+              {"name": "airTemperature", "type": "int", "default": -99} 
+             ]
+}

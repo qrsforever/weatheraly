@@ -164,4 +164,10 @@
         <value>6.0</value>
     </property>
 
+    <!-- YARN 日志 -->
+    <property>
+        <name>yarn.log.server.url</name>
+        <value>http://node0:19888/jobhistory/logs</value>
+    </property>
+
 </configuration>

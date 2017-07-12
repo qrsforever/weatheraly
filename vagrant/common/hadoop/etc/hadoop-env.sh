@@ -33,6 +33,10 @@ export JAVA_HOME=/opt/jdk
 
 export HADOOP_CONF_DIR=${HADOOP_CONF_DIR:-"/etc/hadoop"}
 
+# export HADOOP_USER_CLASSPATH_FIRST=true
+# export AVRO_VER=1.8.2
+# export HADOOP_CLASSPATH="$AVRO_HOME/avro-${AVRO_VER}.jar:$AVRO_HOME/avro-mapred-${AVRO_VER}-hadoop2.jar"
+
 # Extra Java CLASSPATH elements.  Automatically insert capacity-scheduler.
 for f in $HADOOP_HOME/contrib/capacity-scheduler/*.jar; do
   if [ "$HADOOP_CLASSPATH" ]; then
@@ -102,7 +106,7 @@ export HADOOP_LOG_DIR=/home/$USER/workspace/hadoop/logs
 # NOTE: this should be set to a directory that can only be written to by 
 #       the user that will run the hadoop daemons.  Otherwise there is the
 #       potential for a symlink attack.
-export HADOOP_PID_DIR=${HADOOP_PID_DIR}
+export HADOOP_PID_DIR="/opt/ws/hadoop/tmp"
 export HADOOP_SECURE_DN_PID_DIR=${HADOOP_PID_DIR}
 
 # A string representing this instance of hadoop. $USER by default.

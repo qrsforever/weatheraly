@@ -1,8 +1,8 @@
 1. 创建mvn工作环境 
-    # mvn archetype:generate -DgroupId=com.weatheraly.bigdata -DartifactId=datapaser -DpackageName=com.weatheraly.bigdata -DinteractiveMode=false
+    mvn archetype:generate -DgroupId=com.weatheraly.bigdata -DartifactId=datapaser -DpackageName=com.weatheraly.bigdata -DinteractiveMode=false
 
 2. 生成.classpath .project
-    # mvn eclipse:eclipse
+    mvn eclipse:eclipse
 
 3. 导入vim elimd工程(先启动eclimd)
     vim-cmd: :ProjectImport .
@@ -10,12 +10,29 @@
 4. 生成noaa天气数据
     cd ../../bin; get-weather.py; cd -
 
-5. HDFS存储
-    hdfs dfs -rm -r -skipTrash /user/lidong/weatheraly/dataparse/output
+5. 创建必要的目录, 和NOAA数据HDFS存储
+    if $(hadoop fs -test -d weatheraly/dataparse/output); then hdfs dfs -rm -r -skipTrash weatheraly/dataparse/output; fi
     hdfs dfs -mkdir -p /user/lidong/weatheraly/dataparse/input
     hadoop fs -copyFromLocal ../../bin/noaa/ /user/lidong/weatheraly/dataparse/input/
     hdfs dfs -ls weatheraly/dataparse/input/noaa
 
-6. 解析天气数据
+6. 配置环境变量 (vagrant/script脚本已经处理了avro版本问题, 这一步可以略)
+    # hadoop-config.sh 使用 HADOOP_USER_CLASSPATH_FIRST 变量
+    export HADOOP_USER_CLASSPATH_FIRST=true
+    export AVRO_VER=1.8.2
+    export HADOOP_CLASSPATH="$AVRO_HOME/avro-${AVRO_VER}.jar:$AVRO_HOME/avro-mapred-${AVRO_VER}-hadoop2.jar"
+    export AVRO_JARS="$AVRO_HOME/avro-${AVRO_VER}.jar,$AVRO_HOME/avro-mapred-${AVRO_VER}-hadoop2.jar"
+    hadoop jar target/datapaser-1.0.0.jar com.weatheraly.bigdata.DataParseApp -libjars $AVRO_JARS weatheraly/dataparse/input/noaa/**/*.gz weatheraly/dataparse/output
+
+7. 解析天气数据
+    hadoop jar target/datapaser-1.0.0.jar com.weatheraly.bigdata.DataParseApp weatheraly/dataparse/input/noaa/2017/583620-99999-2017.gz weatheraly/dataparse/output
     hadoop jar target/datapaser-1.0.0.jar com.weatheraly.bigdata.DataParseApp weatheraly/dataparse/input/noaa/2017/*.gz weatheraly/dataparse/output
     hadoop jar target/datapaser-1.0.0.jar com.weatheraly.bigdata.DataParseApp weatheraly/dataparse/input/noaa/**/*.gz weatheraly/dataparse/output
+
+8. 查看mr日志
+    hdfs dfs -ls /tmp/logs/lidong/logs
+
+9. 查看结果
+    hdfs dfs -ls weatheraly/dataparse/output
+    hdfs dfs -get weatheraly/dataparse/output/part-r-00000.avro .
+    java -jar /opt/avro/avro-tools-1.8.2.jar tojson part-r-00000.avro
