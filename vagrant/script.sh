@@ -99,6 +99,9 @@ __system_conf() {
         if [ $USER == "root" ]
         then
             cp $COMMON_DIR/linux/etc/* /etc
+            # 替换127.0.0.1 为本机的ip
+            ip=`grep $hn /etc/hosts | cut -d\  -f1`
+            sed -i "s/127.0.0.1/$ip/g" /etc/hosts
         else
             files=`ls $COMMON_DIR/linux/etc/`
             echo "WANRNING! files underside NEED MELD TO YOUR HOST MENUALY"
@@ -184,6 +187,9 @@ __hadoop_conf() {
     fi
     chown -R $user:$user etc
 
+    # 统一zookeeper
+    cp $ZOOKEEPER_HOME/zookeeper-3.4.10.jar  share/hadoop/common/lib/
+
     cd - 1 &>/dev/null
 }
 
@@ -206,18 +212,25 @@ __hbase_conf() {
     fi
 
     # 先copy公共配置
-    if [[ -d $COMMON_DIR/hadoop/etc ]]
+    if [[ -d $COMMON_DIR/hbase/conf ]]
     then
         cp -arpf $COMMON_DIR/hbase/conf/* conf
+
+        # 将Hbase的配置同时 copy 到 hadoop 中
+        cp -arpf $COMMON_DIR/hbase/conf/* $HADOOP_HOME/etc/hadoop/
     fi
     chown -R $user:$user $WS_DIR/hbase
 
     # 在copy差异配置
-    if [[ -d $HADOOP_DIFF/conf ]]
+    if [[ -d $HBASE_DIFF/conf ]]
     then
-        cp -arpf $HADOOP_DIFF/conf/* conf
+        cp -arpf $HBASE_DIFF/conf/* conf
+        cp -arpf $HBASE_DIFF/conf/* $HADOOP_HOME/etc/hadoop/
     fi
     chown -R $user:$user conf
+
+    # log4统一
+    cp $HADOOP_HOME/share/hadoop/common/lib/log4j-1.2.17.jar lib/
 
     cd - 1 &>/dev/null
 }
@@ -246,70 +259,13 @@ __main() {
         then
             rm -rf $WS_DIR
         fi
-
-        if [[ -f $whoami ]]
-        then
-            rm -rf $whoami
-        fi
     fi
 
     __system_conf
+    __zookeeper_conf
     __hadoop_conf
+    __hbase_conf
     __avro_conf
-
-    tasks=(`cat $COMMON_DIR/hosts-duty.txt | grep $hn | cut -d\: -f2`)
-
-    echo "###" > $whoami
-    for t in ${tasks[@]}
-    do
-        if [[ x$t == x'NN' ]]
-        then
-            echo "hdfs namenode -format" >> $whoami
-        fi
-
-        if [[ x$t == x'ZK' ]]
-        then
-            __zookeeper_conf
-            echo "Zookeeper node" >> $whoami
-        fi
-
-        if [[ x$t == x'JN' ]]
-        then
-            echo "Journal node" >> $whoami
-        fi
-
-        if [[ x$t == x'NN' ]]
-        then
-            echo "Name node" >> $whoami
-        fi
-
-        if [[ x$t == x'FC' ]]
-        then
-            echo "FailoverController node" >> $whoami
-        fi
-
-        if [[ x$t == x'RM' ]]
-        then
-            echo "Resource manger node" >> $whoami
-        fi
-
-        if [[ x$t == x'DN' ]]
-        then
-            echo "Data node" >> $whoami
-        fi
-
-        if [[ x$t == x'HM' ]]
-        then
-            __hbase_conf
-            echo "HMaster" >> $whoami
-        fi
-
-        if [[ x$t == x'HR' ]]
-        then
-            __hbase_conf
-            echo "HRegionServer" >> $whoami
-        fi
-    done
 }
 
 __main

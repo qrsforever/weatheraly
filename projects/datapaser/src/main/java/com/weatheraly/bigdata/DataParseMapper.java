@@ -2,21 +2,17 @@ package com.weatheraly.bigdata;
 
 import java.io.IOException;
 
-import org.apache.hadoop.io.IntWritable;
-import org.apache.hadoop.io.LongWritable;
-import org.apache.hadoop.io.Text;
-import org.apache.hadoop.mapreduce.Mapper;
-
 import org.apache.avro.Schema;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericRecord;
-import org.apache.avro.mapred.AvroKey;
 import org.apache.avro.mapred.AvroValue;
-
-import org.slf4j.Logger;  
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.Text;
+import org.apache.hadoop.mapreduce.Mapper;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DataParseMapper extends Mapper<LongWritable, Text, AvroKey<String>, AvroValue<GenericRecord>> {
+public class DataParseMapper extends Mapper<LongWritable, Text, Text, AvroValue<GenericRecord>> {
 
     private static Logger logger = LoggerFactory.getLogger(DataParseMapper.class);
     private NoaaParser noaa = new NoaaParser();
@@ -67,6 +63,6 @@ public class DataParseMapper extends Mapper<LongWritable, Text, AvroKey<String>,
             record.put("airTemperature", noaa.getAirTemperature());
         else
             record.put("airTemperature", -99);
-        context.write(new AvroKey<String>(keyID), new AvroValue<GenericRecord>(record));
+        context.write(new Text(keyID), new AvroValue<GenericRecord>(record));
     }
 }

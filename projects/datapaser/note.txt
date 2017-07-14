@@ -2,6 +2,7 @@
     mvn archetype:generate -DgroupId=com.weatheraly.bigdata -DartifactId=datapaser -DpackageName=com.weatheraly.bigdata -DinteractiveMode=false
 
 2. 生成.classpath .project
+    mvn dependency:sources
     mvn eclipse:eclipse
 
 3. 导入vim elimd工程(先启动eclimd)
@@ -25,14 +26,16 @@
     hadoop jar target/datapaser-1.0.0.jar com.weatheraly.bigdata.DataParseApp -libjars $AVRO_JARS weatheraly/dataparse/input/noaa/**/*.gz weatheraly/dataparse/output
 
 7. 解析天气数据
-    hadoop jar target/datapaser-1.0.0.jar com.weatheraly.bigdata.DataParseApp weatheraly/dataparse/input/noaa/2017/583620-99999-2017.gz weatheraly/dataparse/output
-    hadoop jar target/datapaser-1.0.0.jar com.weatheraly.bigdata.DataParseApp weatheraly/dataparse/input/noaa/2017/*.gz weatheraly/dataparse/output
-    hadoop jar target/datapaser-1.0.0.jar com.weatheraly.bigdata.DataParseApp weatheraly/dataparse/input/noaa/**/*.gz weatheraly/dataparse/output
+    # hadoop jar target/datapaser-1.0.0.jar com.weatheraly.bigdata.DataParseApp weatheraly/dataparse/input/noaa/2017/583620-99999-2017.gz weatheraly/dataparse/output
+    # hadoop jar target/datapaser-1.0.0.jar com.weatheraly.bigdata.DataParseApp weatheraly/dataparse/input/noaa/2017/*.gz weatheraly/dataparse/output
+    # hadoop jar target/datapaser-1.0.0.jar com.weatheraly.bigdata.DataParseApp weatheraly/dataparse/input/noaa/**/*.gz weatheraly/dataparse/output
+
+    hadoop jar target/datapaser-1.0.0.jar com.weatheraly.bigdata.DataParseApp weatheraly/dataparse/input/noaa/2017/583620-99999-2017.gz weather
 
 8. 查看mr日志
     hdfs dfs -ls /tmp/logs/lidong/logs
 
 9. 查看结果
-    hdfs dfs -ls weatheraly/dataparse/output
-    hdfs dfs -get weatheraly/dataparse/output/part-r-00000.avro .
-    java -jar /opt/avro/avro-tools-1.8.2.jar tojson part-r-00000.avro
+    # hdfs dfs -ls weatheraly/dataparse/output
+    # hdfs dfs -get weatheraly/dataparse/output/part-r-00000.avro .
+    # java -jar /opt/avro/avro-tools-1.8.2.jar tojson part-r-00000.avro

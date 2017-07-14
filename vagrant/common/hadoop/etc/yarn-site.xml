@@ -14,6 +14,12 @@
         <value>4320</value>
     </property> 
 
+    <!-- Aggregate log  -->
+    <property>
+        <name>yarn.nodemanager.remote-app-log-dir</name>
+        <value>/opt/ws/hadoop/tmp/logs</value>
+    </property>
+
     <!--RM失联后重新链接的时间-->
     <property>
         <name>yarn.resourcemanager.connect.retry-interval.ms</name>

@@ -94,3 +94,117 @@
     解决:
         Hadoop2.8版本自带avro版本1.7.4, 项目中使用1.8.2, 而createDatumWriter函数再1.8.2中引入.
         最简单的方式直接替换掉原来的
+
+6. Hbase的库找不到
+    错误提示:
+        Exception in thread "main" java.lang.NoClassDefFoundError: org/apache/hadoop/hbase/HBaseConfiguration
+        	at com.weatheraly.bigdata.DataParseApp.createHBaseTable(DataParseApp.java:60)
+        	at com.weatheraly.bigdata.DataParseApp.run(DataParseApp.java:105)
+        	at org.apache.hadoop.util.ToolRunner.run(ToolRunner.java:76)
+        	at com.weatheraly.bigdata.DataParseApp.main(DataParseApp.java:91)
+        	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+        	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+        	at java.lang.reflect.Method.invoke(Method.java:497)
+        	at org.apache.hadoop.util.RunJar.run(RunJar.java:234)
+        	at org.apache.hadoop.util.RunJar.main(RunJar.java:148)
+        Caused by: java.lang.ClassNotFoundException: org.apache.hadoop.hbase.HBaseConfiguration
+        	at java.net.URLClassLoader.findClass(URLClassLoader.java:381)
+        	at java.lang.ClassLoader.loadClass(ClassLoader.java:424)
+        	at java.lang.ClassLoader.loadClass(ClassLoader.java:357)
+
+    解决: (hadoop-env.sh)
+        export HBASE_HOME=/opt/hbase
+        for f in $HBASE_HOME/lib/*.jar; do                        
+            if [ "$HBASE_CLASSPATH" ]; then
+                export HBASE_CLASSPATH=$HBASE_CLASSPATH:$f
+            else
+                export HBASE_CLASSPATH=$f
+            fi
+        done
+        export HADOOP_CLASSPATH=$HADOOP_CLASSPATH:$HBASE_CLASSPATH
+ 
+
+7. 运行主机不对
+    错误:
+         INFO zookeeper.ZooKeeper: Initiating client connection, connectString=localhost:2181 sessionTimeout=180000 watcher=hconnection
+         INFO zookeeper.ClientCnxn: Opening socket connection to server localhost/127.0.0.1:2181
+         WARN zookeeper.ClientCnxn: Session 0x0 for server null, unexpected error, closing socket connection and attempting reconnect
+         java.net.ConnectException: Connection refused
+    解决:
+        在node0上运行hadoop, 因为没有配置zk, 运行出错, 到装了zk的node机运行ok, Zk真是一个垃圾的东西.
+
+8. log4j多个不同版本jar包
+    错误:
+        SLF4J: Class path contains multiple SLF4J bindings.
+        SLF4J: Found binding in [jar:file:/data/opt/hadoop/hadoop-2.8.0/share/hadoop/common/lib/slf4j-log4j12-1.7.10.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+        SLF4J: Found binding in [jar:file:/data/opt/hbase/hbase-1.3.1/lib/slf4j-log4j12-1.7.5.jar!/org/slf4j/impl/StaticLoggerBinder.class]
+        SLF4J: See http://www.slf4j.org/codes.html#multiple_bindings for an explanation.
+        SLF4J: Actual binding is of type [org.slf4j.impl.Log4jLoggerFactory]
+
+    解决:
+        # hadoop-evn.sh 过滤
+        export HBASE_HOME=/opt/hbase
+        for f in $HBASE_HOME/lib/*.jar; do
+            # 过滤冲突jar包
+            bf=`basename $f`
+            hh=${bf%%-*}
+            if [ slf4j == $hh -o log4j == $hh ]; then
+                continue
+            fi
+            if [ "$HBASE_CLASSPATH" ]; then
+                export HBASE_CLASSPATH=$HBASE_CLASSPATH:$f
+            else
+                export HBASE_CLASSPATH=$f
+            fi
+        done
+        export HADOOP_CLASSPATH=$HADOOP_CLASSPATH:$HBASE_CLASSPATH
+
+        (暴力点替换)
+
+9. 在没搭建HBase环境的主机上运行hadoop jar(hbase)出错
+    错误:
+        17/07/14 19:30:42 INFO zookeeper.ClientCnxn: Opening socket connection to server localhost/192.168.1.200:2181. Will not attempt to authenticate using SASL (unknown error)
+        17/07/14 19:30:42 WARN zookeeper.ClientCnxn: Session 0x0 for server null, unexpected error, closing socket connection and attempting reconnect
+        java.net.ConnectException: Connection refused
+        	at sun.nio.ch.SocketChannelImpl.checkConnect(Native Method)
+        	at sun.nio.ch.SocketChannelImpl.finishConnect(SocketChannelImpl.java:717)
+        	at org.apache.zookeeper.ClientCnxnSocketNIO.doTransport(ClientCnxnSocketNIO.java:361)
+        	at org.apache.zookeeper.ClientCnxn$SendThread.run(ClientCnxn.java:1141)
+    
+    解决:
+        这个和没有没搭建hbase无关, 犯了一个错误, 需要把hbase相关的配置hbase-site.xml放到hadoop的配置文件中.
+        结论来源于源码, HBaseConfiguration --> Configuration (加载配置时统一使用hadoop目录下的)
+
+
+10. 
+    错误:
+        Exception in thread "main" org.apache.hadoop.hbase.client.RetriesExhaustedException: Can't get the locations
+        	at org.apache.hadoop.hbase.client.RpcRetryingCallerWithReadReplicas.getRegionLocations(RpcRetryingCallerWithReadReplicas.java:319)
+        	at org.apache.hadoop.hbase.client.ScannerCallableWithReplicas.call(ScannerCallableWithReplicas.java:156)
+        	at org.apache.hadoop.hbase.client.ScannerCallableWithReplicas.call(ScannerCallableWithReplicas.java:60)
+        	at org.apache.hadoop.hbase.client.RpcRetryingCaller.callWithoutRetries(RpcRetryingCaller.java:212)
+        	at org.apache.hadoop.hbase.client.ClientScanner.call(ClientScanner.java:314)
+        	at org.apache.hadoop.hbase.client.ClientScanner.nextScanner(ClientScanner.java:289)
+        	at org.apache.hadoop.hbase.client.ClientScanner.initializeScannerInConstruction(ClientScanner.java:164)
+        	at org.apache.hadoop.hbase.client.ClientScanner.<init>(ClientScanner.java:159)
+        	at org.apache.hadoop.hbase.client.HTable.getScanner(HTable.java:796)
+        	at org.apache.hadoop.hbase.MetaTableAccessor.fullScan(MetaTableAccessor.java:602)
+        	at org.apache.hadoop.hbase.MetaTableAccessor.tableExists(MetaTableAccessor.java:366)
+        	at org.apache.hadoop.hbase.client.HBaseAdmin.tableExists(HBaseAdmin.java:408)
+        	at com.weatheraly.bigdata.DataParseApp.createHBaseTable(DataParseApp.java:74)
+        	at com.weatheraly.bigdata.DataParseApp.run(DataParseApp.java:107)
+        	at org.apache.hadoop.util.ToolRunner.run(ToolRunner.java:76)
+        	at com.weatheraly.bigdata.DataParseApp.main(DataParseApp.java:92)
+        	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+        	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+        	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+        	at java.lang.reflect.Method.invoke(Method.java:497)
+        	at org.apache.hadoop.util.RunJar.run(RunJar.java:234)
+        	at org.apache.hadoop.util.RunJar.main(RunJar.java:148)
+        17/07/14 21:14:21 INFO zookeeper.ClientCnxn: EventThread shut down for session: 0x15d413a16740007
+
+        ROOT CAUSE
+        This happens when user has an incorrect value defined for "zookeeper.znode.parent" in the hbase-site.xml sourced on the client side or in case of a custom API written , the "zookeeper.znode.parent" was incorrectly updated to a wrong location . For example the default "zookeeper.znode.parent" is set to "/hbase-unsecure" , but if you incorrectly specify that as lets say "/hbase" as opposed to what we have set up in the cluster, we will encounter this exception while trying to connect to the HBase cluster.
+        RESOLUTION
+        The solution here would be to update the hbase-site.xml / source out the same hbase-site.xml from the cluster or update the HBase API to correctly point out the "zookeeper.znode.parent" value as updated in the HBase cluster.

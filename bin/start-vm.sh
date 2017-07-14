@@ -6,6 +6,7 @@ topdir=`cd $bin/../; pwd`
 vagrant_dir=$topdir/vagrant
 ssh_dir="/home/$USER/.ssh"
 ssh_key="id_rsa"
+clean=$1
 
 vm_num=5
 
@@ -28,12 +29,12 @@ __ssh_conf()
     cp /tmp/authorized_keys  $ssh_dir
 }
 
-$topdir/bin/stop-cluster.sh
+# $topdir/bin/stop-cluster.sh
 
 cd $vagrant_dir
 
 # 带有参数1， 清楚所有集群建立的数据，重新开始(或者第一次启动)
-if [[ x$1 == x1 ]]
+if [[ x$clean == x1 ]]
 then
     export CLEANUP=1;
 else
@@ -49,7 +50,7 @@ do
     vagrant up node$i --provision
 done
 
-if [[ x$1 == x1 ]]
+if [[ x$clean == x1 ]]
 then
     # 配置集群彼此免密登录
     __ssh_conf

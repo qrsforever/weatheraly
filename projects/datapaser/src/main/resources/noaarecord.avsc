@@ -1,6 +1,6 @@
 { "type": "record",
   "name": "NoaaRecord",
-  "namespace": "noaarecord.avro",
+  "namespace": "com.weatheraly.bigdata",
   "fields" : [
               {"name": "observationTime", "type": "string", "default": -1},
               {"name": "directionAngle", "type": "int", "default": -1},

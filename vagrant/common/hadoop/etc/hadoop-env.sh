@@ -33,10 +33,25 @@ export JAVA_HOME=/opt/jdk
 
 export HADOOP_CONF_DIR=${HADOOP_CONF_DIR:-"/etc/hadoop"}
 
-# export HADOOP_USER_CLASSPATH_FIRST=true
-# export AVRO_VER=1.8.2
-# export HADOOP_CLASSPATH="$AVRO_HOME/avro-${AVRO_VER}.jar:$AVRO_HOME/avro-mapred-${AVRO_VER}-hadoop2.jar"
+export HBASE_HOME=/opt/hbase
+for f in $HBASE_HOME/lib/*.jar; do
+    # 过滤冲突jar包
+    bf=`basename $f`
+    hh=${bf%%-*}
+    if [ slf4j == $hh -o log4j == $hh ]; then
+        continue
+    fi
+    if [ "$HBASE_CLASSPATH" ]; then
+        HBASE_CLASSPATH=$HBASE_CLASSPATH:$f
+    else
+        HBASE_CLASSPATH=$f
+    fi
+done
+export HADOOP_CLASSPATH=$HBASE_CLASSPATH:$HADOOP_CLASSPATH
 
+# export ZOOKEEPER_HOME=/opt/zookeeper
+# export HADOOP_CLASSPATH=$ZOOKEEPER_HOME/zookeeper-3.4.10.jar:$HADOOP_CLASSPATH
+ 
 # Extra Java CLASSPATH elements.  Automatically insert capacity-scheduler.
 for f in $HADOOP_HOME/contrib/capacity-scheduler/*.jar; do
   if [ "$HADOOP_CLASSPATH" ]; then
