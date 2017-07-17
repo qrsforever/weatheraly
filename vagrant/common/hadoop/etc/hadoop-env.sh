@@ -127,4 +127,4 @@ export HADOOP_SECURE_DN_PID_DIR=${HADOOP_PID_DIR}
 # A string representing this instance of hadoop. $USER by default.
 export HADOOP_IDENT_STRING=$USER
 
-export HADOOP_NAMENODE_OPTS="-Dcom.sun.management.jmxremote -XX:+UseConcMarkSweepGC -XX:ParallelGCThreads=8 -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=70 -Xms512M -Xmx512M -XX:NewSize=128M -XX:MaxNewSize=128M -verbose:gc -Xloggc:$HADOOP_LOG_DIR/gc.log-`date +'%Y%m%d%H%M'` -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+PrintGCDateStamps -XX:ErrorFile=$HADOOP_LOG_DIR/hs_err_pid%p.log -XX:+HeapDumpOnOutOfMemoryError $HADOOP_NAMENODE_OPTS"
+export HADOOP_NAMENODE_OPTS="-Dcom.sun.management.jmxremote -Duser.timezone=GMT+08 -XX:+UseConcMarkSweepGC -XX:ParallelGCThreads=8 -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=70 -Xms512M -Xmx512M -XX:NewSize=128M -XX:MaxNewSize=128M -verbose:gc -Xloggc:$HADOOP_LOG_DIR/gc.log-`date +'%Y%m%d%H%M'` -XX:+PrintGCDetails -XX:+PrintGCTimeStamps -XX:+PrintGCDateStamps -XX:ErrorFile=$HADOOP_LOG_DIR/hs_err_pid%p.log -XX:+HeapDumpOnOutOfMemoryError $HADOOP_NAMENODE_OPTS"

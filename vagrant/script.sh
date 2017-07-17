@@ -98,6 +98,14 @@ __system_conf() {
     then
         if [ $USER == "root" ]
         then
+            if [ -f $COMMON_DIR/linux/etc/localtime ];
+            then
+                rm /etc/localtime
+            fi
+            if [ -f $COMMON_DIR/linux/etc/timezone ];
+            then
+                rm /etc/timezone
+            fi
             cp $COMMON_DIR/linux/etc/* /etc
             # 替换127.0.0.1 为本机的ip
             ip=`grep $hn /etc/hosts | cut -d\  -f1`
@@ -109,6 +117,9 @@ __system_conf() {
             echo "WANRNING! files above NEED MELD TO YOUR HOST MENUALY"
         fi
     fi
+
+    # 显示时间
+    date
 }
 
 ###### Zookeeper配置 ######
@@ -229,9 +240,12 @@ __hbase_conf() {
     fi
     chown -R $user:$user conf
 
-    # log4统一
-    cp $HADOOP_HOME/share/hadoop/common/lib/log4j-1.2.17.jar lib/
-
+    # log4统一, 删除掉, 统一使用hadoop中的 (# export HBASE_DISABLE_HADOOP_CLASSPATH_LOOKUP=)
+    if [ -e lib/log4j*.jar ];
+    then
+        echo "gzip lib/log4j*.jar lib/slf4j*.jar"
+        gzip lib/log4j*.jar lib/slf4j*.jar
+    fi
     cd - 1 &>/dev/null
 }
 

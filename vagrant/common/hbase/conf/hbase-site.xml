@@ -13,10 +13,10 @@
     </property>
 
     <!-- 只需端口即可，不必再写主机名称了！-->
-    <property>
-        <name>hbase.master</name>
-        <value>60000</value>
-    </property>
+    <!-- <property>
+       -     <name>hbase.master</name>
+       -     <value>60000</value>
+       - </property> -->
 
     <!-- 采用分布式模式 -->
     <property>

@@ -72,12 +72,12 @@ public class DataParseApp extends Configured implements Tool {
                 HColumnDescriptor hcd = new HColumnDescriptor("content");
                 // 表中增加列族
                 htd.addFamily(hcd);
-                if (admin.tableExists(tableName)) {
-                    System.out.println("TableName " + tableName + " exists");
-                    admin.disableTable(tableName);
-                    // 清空表中数据
-                    admin.truncateTable(tableName, false);
-                } else 
+                // if (admin.tableExists(tableName)) {
+                    // System.out.println("TableName " + tableName + " exists");
+                    // admin.disableTable(tableName);
+                    // // 清空表中数据
+                    // admin.truncateTable(tableName, false);
+                // } else 
                     admin.createTable(htd);
             } finally {
                 admin.close();

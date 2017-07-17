@@ -59,3 +59,8 @@ fi
 unset CLEANUP
 
 cd - 1 &>/dev/null
+
+if [[ x$clean == x1 ]]
+then
+    $bin/start-cluster.sh 1
+fi

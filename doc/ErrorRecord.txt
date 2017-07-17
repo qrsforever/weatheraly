@@ -208,3 +208,88 @@
         This happens when user has an incorrect value defined for "zookeeper.znode.parent" in the hbase-site.xml sourced on the client side or in case of a custom API written , the "zookeeper.znode.parent" was incorrectly updated to a wrong location . For example the default "zookeeper.znode.parent" is set to "/hbase-unsecure" , but if you incorrectly specify that as lets say "/hbase" as opposed to what we have set up in the cluster, we will encounter this exception while trying to connect to the HBase cluster.
         RESOLUTION
         The solution here would be to update the hbase-site.xml / source out the same hbase-site.xml from the cluster or update the HBase API to correctly point out the "zookeeper.znode.parent" value as updated in the HBase cluster.
+
+11. 日志时间与系统时间不匹配
+    解决:
+    1. 局部解决(不推荐)
+        export HADOOP_NAMENODE_OPTS="-Duser.timezone=GMT+08"
+    2. 全局解决
+        # 使用vagrant/common/linux/etc/下的配置
+        if [ -f $COMMON_DIR/linux/etc/localtime ];
+        then
+            rm /etc/localtime
+        fi
+        if [ -f $COMMON_DIR/linux/etc/timezone ];
+        then
+            rm /etc/timezone
+        fi
+        cp $COMMON_DIR/linux/etc/* /etc
+
+12. 
+    错误:
+        2017-07-17 18:01:32,428 WARN  [regionserver/localhost/192.168.1.202:16020] regionserver.HRegionServer: error telling master we are up
+        com.google.protobuf.ServiceException: java.net.ConnectException: Connection refused
+        	at org.apache.hadoop.hbase.ipc.AbstractRpcClient.callBlockingMethod(AbstractRpcClient.java:240)
+        	at org.apache.hadoop.hbase.ipc.AbstractRpcClient$BlockingRpcChannelImplementation.callBlockingMethod(AbstractRpcClient.java:336)
+        	at org.apache.hadoop.hbase.protobuf.generated.RegionServerStatusProtos$RegionServerStatusService$BlockingStub.regionServerStartup(RegionServerStatusProtos.java:8982)
+        	at org.apache.hadoop.hbase.regionserver.HRegionServer.reportForDuty(HRegionServer.java:2335)
+        	at org.apache.hadoop.hbase.regionserver.HRegionServer.run(HRegionServer.java:929)
+        	at java.lang.Thread.run(Thread.java:745)
+        Caused by: java.net.ConnectException: Connection refused
+        	at sun.nio.ch.SocketChannelImpl.checkConnect(Native Method)
+        	at sun.nio.ch.SocketChannelImpl.finishConnect(SocketChannelImpl.java:717)
+        	at org.apache.hadoop.net.SocketIOWithTimeout.connect(SocketIOWithTimeout.java:206)
+        	at org.apache.hadoop.net.NetUtils.connect(NetUtils.java:529)
+        	at org.apache.hadoop.net.NetUtils.connect(NetUtils.java:493)
+        	at org.apache.hadoop.hbase.ipc.RpcClientImpl$Connection.setupConnection(RpcClientImpl.java:416)
+        	at org.apache.hadoop.hbase.ipc.RpcClientImpl$Connection.setupIOstreams(RpcClientImpl.java:722)
+        	at org.apache.hadoop.hbase.ipc.RpcClientImpl$Connection.writeRequest(RpcClientImpl.java:909)
+        	at org.apache.hadoop.hbase.ipc.RpcClientImpl$Connection.tracedWriteRequest(RpcClientImpl.java:873)
+        	at org.apache.hadoop.hbase.ipc.RpcClientImpl.call(RpcClientImpl.java:1244)
+        	at org.apache.hadoop.hbase.ipc.AbstractRpcClient.callBlockingMethod(AbstractRpcClient.java:227)
+        	... 5 more
+        2017-07-17 18:01:32,428 WARN  [regionserver/localhost/192.168.1.202:16020] regionserver.HRegionServer: reportForDuty failed; sleeping and then retrying.
+        2017-07-17 18:01:35,429 INFO  [regionserver/localhost/192.168.1.202:16020] regionserver.HRegionServer: reportForDuty to master=localhost,16000,1500284427448 with port=16020, startcode=1500284423534
+        2017-07-17 18:01:35,429 WARN  [regionserver/localhost/192.168.1.202:16020] regionserver.HRegionServer: error telling master we are up
+    
+    建议:
+        重新格式化hdfs文件系统
+
+
+13. 
+    错误:
+        2017-07-17 19:58:39,691 INFO  [localhost:16000.activeMasterManager] master.ServerManager: Waiting for region servers count to settle; currently checked in 0, slept for 134079 ms, expecting minimum of 1, maximum of 2147483647, timeout of 4500 ms, interval of 1500 ms.
+        2017-07-17 19:58:41,196 INFO  [localhost:16000.activeMasterManager] master.ServerManager: Waiting for region servers count to settle; currently checked in 0, slept for 135584 ms, expecting minimum of 1, maximum of 2147483647, timeout of 4500 ms, interval of 1500 ms.
+        2017-07-17 19:58:42,700 INFO  [localhost:16000.activeMasterManager] master.ServerManager: Waiting for region servers count to settle; currently checked in 0, slept for 137088 ms, expecting minimum of 1, maximum of 2147483647, timeout of 4500 ms, interval of 1500 ms.
+
+    未解决
+
+
+14. hbase.version 问题, 实际上是clusterID不匹配问题
+    错误:
+        2017-07-17 20:31:57,010 WARN org.apache.hadoop.hdfs.server.common.Storage: Failed to add storage directory [DISK]file:/opt/ws/hadoop/hdfs/data/
+        java.io.IOException: Incompatible clusterIDs in /home/lidong/workspace/hadoop/hdfs/data: namenode clusterID = CID-9341723c-cd5d-4f4e-bba3-190f581d1a1f; datanode clusterID = CID-f2f1c1e3-1ec5-4f22-a41f-8814fcf36521
+        	at org.apache.hadoop.hdfs.server.datanode.DataStorage.doTransition(DataStorage.java:760)
+        	at org.apache.hadoop.hdfs.server.datanode.DataStorage.loadStorageDirectory(DataStorage.java:293)
+        	at org.apache.hadoop.hdfs.server.datanode.DataStorage.loadDataStorage(DataStorage.java:409)
+        	at org.apache.hadoop.hdfs.server.datanode.DataStorage.addStorageLocations(DataStorage.java:388)
+        	at org.apache.hadoop.hdfs.server.datanode.DataStorage.recoverTransitionRead(DataStorage.java:556)
+        	at org.apache.hadoop.hdfs.server.datanode.DataNode.initStorage(DataNode.java:1566)
+        	at org.apache.hadoop.hdfs.server.datanode.DataNode.initBlockPool(DataNode.java:1527)
+        	at org.apache.hadoop.hdfs.server.datanode.BPOfferService.verifyAndSetNamespaceInfo(BPOfferService.java:327)
+        	at org.apache.hadoop.hdfs.server.datanode.BPServiceActor.connectToNNAndHandshake(BPServiceActor.java:266)
+        	at org.apache.hadoop.hdfs.server.datanode.BPServiceActor.run(BPServiceActor.java:746)
+        	at java.lang.Thread.run(Thread.java:745)
+    原因:
+        clusterIDs不统一导致, 可能是由于自己重新格式化namenode导致 (start-cluster.sh 1)
+
+    解决:
+        stop-cluster.sh
+        start-vm.sh 1
+        
+15. Hbase如何基于NameNode的HA进行配置问题
+    错误:
+        17/07/17 21:00:41 WARN wal.WALProcedureStore: Log directory not found: File hdfs://bigha/hbase/MasterProcWALs does not exist. 
+    解决:
+        Add a pointer to your HADOOP_CONF_DIR to the HBASE_CLASSPATH environment variable in hbase-env.sh.
+        Add a copy of hdfs-site.xml (or hadoop-site.xml) or, better, symlinks, under ${HBASE_HOME}/conf, or

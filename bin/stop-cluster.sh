@@ -54,7 +54,7 @@ __stop_hbase() {
     echo "-----> $FUNCNAME"
     
     print_with_color "关闭整个集群(HMaster和HRegionServer)"
-    ssh node0 "$run_env; stop-hbase.sh"
+    ssh node1 "$run_env; stop-hbase.sh"
     
     print_with_color "关闭另一个HMaster"
     ssh node5 "$run_env; hbase-daemon.sh stop master"

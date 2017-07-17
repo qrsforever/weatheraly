@@ -28,9 +28,9 @@ export JAVA_HOME=/opt/jdk
 
 # Extra Java CLASSPATH elements.  Optional.
 # HA集群环境需要设置, 需要core-site.xml hdfs-site.xml两个文件
-export HBASE_CLASSPATH=/opt/hadoop/etc/hadoop/
+export HBASE_CLASSPATH=/opt/hadoop/etc/hadoop:/opt/hadoop/share/hadoop/common/lib/log4j-1.2.17.jar:/opt/hadoop/share/hadoop/common/lib/slf4j-api-1.7.10.jar:/opt/hadoop/share/hadoop/common/lib/slf4j-log4j12-1.7.10.jar
 
-export HBASE_DISABLE_HADOOP_CLASSPATH_LOOKUP=true
+# export HBASE_DISABLE_HADOOP_CLASSPATH_LOOKUP=true
 
 # The maximum amount of heap to use. Default is left to JVM default.
 # export HBASE_HEAPSIZE=1G
@@ -46,8 +46,8 @@ export HBASE_DISABLE_HADOOP_CLASSPATH_LOOKUP=true
 export HBASE_OPTS="-XX:+UseConcMarkSweepGC"
 
 # Configure PermSize. Only needed in JDK7. You can safely remove it for JDK8+
-export HBASE_MASTER_OPTS="$HBASE_MASTER_OPTS -XX:PermSize=128m -XX:MaxPermSize=128m"
-export HBASE_REGIONSERVER_OPTS="$HBASE_REGIONSERVER_OPTS -XX:PermSize=128m -XX:MaxPermSize=128m"
+# export HBASE_MASTER_OPTS="$HBASE_MASTER_OPTS -XX:PermSize=128m -XX:MaxPermSize=128m"
+# export HBASE_REGIONSERVER_OPTS="$HBASE_REGIONSERVER_OPTS -XX:PermSize=128m -XX:MaxPermSize=128m"
 
 # Uncomment one of the below three options to enable java garbage collection logging for the server-side processes.
 
