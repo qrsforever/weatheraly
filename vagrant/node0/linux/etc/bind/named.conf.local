@@ -1,0 +1,86 @@
+//
+// Do any local configuration here
+//
+
+// Consider adding the 1918 zones here, if they are not used in your
+// organization
+//include "/etc/bind/zones.rfc1918";
+
+//domain -> ip
+zone "ha.com" in {          
+	type master;
+	file "/etc/bind/db.ha.com";
+};             
+ 
+ 
+// ip -> domain
+zone "1.168.192.in-addr.arpa" in {
+	type master;
+	file "/etc/bind/db.1.168.192";
+};
+
+// ----- node0 
+zone "node0" in {          
+	type master;
+	file "/etc/bind/db.node0";
+};             
+
+zone "200.1.168.192.in-addr.arpa" in {
+	type master;
+	file "/etc/bind/db.200.1.168.192";
+};
+
+// ----- node1 
+zone "node1" in {          
+	type master;
+	file "/etc/bind/db.node1";
+};             
+
+zone "201.1.168.192.in-addr.arpa" in {
+	type master;
+	file "/etc/bind/db.201.1.168.192";
+};
+
+// ----- node2
+zone "node2" in {          
+	type master;
+	file "/etc/bind/db.node2";
+};             
+
+zone "202.1.168.192.in-addr.arpa" in {
+	type master;
+	file "/etc/bind/db.202.1.168.192";
+};
+
+// ----- node3
+zone "node3" in {          
+	type master;
+	file "/etc/bind/db.node3";
+};             
+
+zone "203.1.168.192.in-addr.arpa" in {
+	type master;
+	file "/etc/bind/db.203.1.168.192";
+};
+
+// ----- node4
+zone "204.1.168.192.in-addr.arpa" in {
+	type master;
+	file "/etc/bind/db.204.1.168.192";
+};
+
+zone "node4" in {          
+	type master;
+	file "/etc/bind/db.node4";
+};             
+
+// ----- node5
+zone "205.1.168.192.in-addr.arpa" in {
+	type master;
+	file "/etc/bind/db.205.1.168.192";
+};
+
+zone "node5" in {          
+	type master;
+	file "/etc/bind/db.node5";
+};             

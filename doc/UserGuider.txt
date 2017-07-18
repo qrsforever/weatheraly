@@ -12,3 +12,8 @@ node5:      v
 
 下载天气数据 (1945 - 至今, 北京,上海,华盛顿,东京城市站点等)
     get-weather.py
+
+node0 dns服务器设置:
+    sudo apt-get install bind9 dnsutils 
+    cp vagrant/node0/linux/etc/bind/* node0:/etc/bind
+    sudo /etc/init.d/bind9 restart

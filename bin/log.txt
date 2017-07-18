@@ -1,0 +1,117 @@
+-----> __main
+-----> __start_zookeeper
+# //////////////////////////////////////////////////
+# 	 [0;34;1m启动zkServer(所有安装zookeeper机群上)[0m
+# //////////////////////////////////////////////////
+Starting zookeeper ... STARTED
+Starting zookeeper ... STARTED
+Starting zookeeper ... STARTED
+# //////////////////////////////////////////////////
+# 	 [0;34;1m查看zkServer启动状态[0m
+# //////////////////////////////////////////////////
+Mode: follower
+Mode: leader
+Mode: follower
+# //////////////////////////////////////////////////
+# 	 [0;34;1m(首次需要)格式化zookeeper集群(任意一台namenode)[0m
+# //////////////////////////////////////////////////
+Connecting to node2
+2017-07-18 20:48:28,452 [myid:] - INFO  [main:Environment@100] - Client environment:zookeeper.version=3.4.10-39d3a4f269333c922ed3db283be479f9deacaa0f, built on 03/23/2017 10:13 GMT
+2017-07-18 20:48:28,454 [myid:] - INFO  [main:Environment@100] - Client environment:host.name=localhost
+2017-07-18 20:48:28,454 [myid:] - INFO  [main:Environment@100] - Client environment:java.version=1.8.0_73
+2017-07-18 20:48:28,455 [myid:] - INFO  [main:Environment@100] - Client environment:java.vendor=Oracle Corporation
+2017-07-18 20:48:28,455 [myid:] - INFO  [main:Environment@100] - Client environment:java.home=/data/opt/jdk/jdk1.8.0_73/jre
+2017-07-18 20:48:28,455 [myid:] - INFO  [main:Environment@100] - Client environment:java.class.path=/data/opt/zookeeper/zookeeper-3.4.10/bin/../build/classes:/data/opt/zookeeper/zookeeper-3.4.10/bin/../build/lib/*.jar:/data/opt/zookeeper/zookeeper-3.4.10/bin/../lib/slf4j-log4j12-1.6.1.jar:/data/opt/zookeeper/zookeeper-3.4.10/bin/../lib/slf4j-api-1.6.1.jar:/data/opt/zookeeper/zookeeper-3.4.10/bin/../lib/netty-3.10.5.Final.jar:/data/opt/zookeeper/zookeeper-3.4.10/bin/../lib/log4j-1.2.16.jar:/data/opt/zookeeper/zookeeper-3.4.10/bin/../lib/jline-0.9.94.jar:/data/opt/zookeeper/zookeeper-3.4.10/bin/../zookeeper-3.4.10.jar:/data/opt/zookeeper/zookeeper-3.4.10/bin/../src/java/lib/ivy-2.4.0.jar:/data/opt/zookeeper/zookeeper-3.4.10/bin/../conf:.:/data/opt/jdk/jdk1.8.0_73/lib:/data/opt/jdk/jdk1.8.0_73/jre/lib
+2017-07-18 20:48:28,456 [myid:] - INFO  [main:Environment@100] - Client environment:java.library.path=/usr/java/packages/lib/amd64:/usr/lib64:/lib64:/lib:/usr/lib
+2017-07-18 20:48:28,456 [myid:] - INFO  [main:Environment@100] - Client environment:java.io.tmpdir=/tmp
+2017-07-18 20:48:28,456 [myid:] - INFO  [main:Environment@100] - Client environment:java.compiler=<NA>
+2017-07-18 20:48:28,456 [myid:] - INFO  [main:Environment@100] - Client environment:os.name=Linux
+2017-07-18 20:48:28,456 [myid:] - INFO  [main:Environment@100] - Client environment:os.arch=amd64
+2017-07-18 20:48:28,456 [myid:] - INFO  [main:Environment@100] - Client environment:os.version=4.4.0-83-generic
+2017-07-18 20:48:28,456 [myid:] - INFO  [main:Environment@100] - Client environment:user.name=lidong
+2017-07-18 20:48:28,456 [myid:] - INFO  [main:Environment@100] - Client environment:user.home=/home/lidong
+2017-07-18 20:48:28,456 [myid:] - INFO  [main:Environment@100] - Client environment:user.dir=/home/lidong
+2017-07-18 20:48:28,457 [myid:] - INFO  [main:ZooKeeper@438] - Initiating client connection, connectString=node2 sessionTimeout=30000 watcher=org.apache.zookeeper.ZooKeeperMain$MyWatcher@506c589e
+2017-07-18 20:48:28,470 [myid:] - INFO  [main-SendThread(node2:2181):ClientCnxn$SendThread@1032] - Opening socket connection to server node2/192.168.1.202:2181. Will not attempt to authenticate using SASL (unknown error)
+2017-07-18 20:48:28,511 [myid:] - INFO  [main-SendThread(node2:2181):ClientCnxn$SendThread@876] - Socket connection established to node2/192.168.1.202:2181, initiating session
+2017-07-18 20:48:28,524 [myid:] - INFO  [main-SendThread(node2:2181):ClientCnxn$SendThread@1299] - Session establishment complete on server node2/192.168.1.202:2181, sessionid = 0x15d55bdf38b0000, negotiated timeout = 30000
+
+WATCHER::
+
+WatchedEvent state:SyncConnected type:None path:null
+[zookeeper, yarn-leader-election, hadoop-ha, hbase, rmstore]
+-----> __start_journalnode
+# //////////////////////////////////////////////////
+# 	 [0;34;1m启动JournalNode集群(所有journalnode集群上)[0m
+# //////////////////////////////////////////////////
+starting journalnode, logging to /home/lidong/workspace/hadoop/logs/hadoop-lidong-journalnode-node2.out
+starting journalnode, logging to /home/lidong/workspace/hadoop/logs/hadoop-lidong-journalnode-node3.out
+starting journalnode, logging to /home/lidong/workspace/hadoop/logs/hadoop-lidong-journalnode-node4.out
+-----> __start_hadoop
+# //////////////////////////////////////////////////
+# 	 [0;34;1m(首次需要)格式化并启动NameNode集群(在其中一台namenode机器上)[0m
+# //////////////////////////////////////////////////
+Formatting using clusterid: CID-4694f57b-12a8-4b76-96a1-392fefea86e4
+starting namenode, logging to /home/lidong/workspace/hadoop/logs/hadoop-lidong-namenode-node0.out
+# //////////////////////////////////////////////////
+# 	 [0;34;1m同步NameNode元数据到另一台机器上, 并启动[0m
+# //////////////////////////////////////////////////
+=====================================================
+About to bootstrap Standby ID nn2 from:
+           Nameservice ID: bigha
+        Other Namenode ID: nn1
+  Other NN's HTTP address: http://node0:50070
+  Other NN's IPC  address: node0/192.168.1.200:8020
+             Namespace ID: 851986288
+            Block pool ID: BP-1257097448-127.0.0.1-1500380891948
+               Cluster ID: CID-f5afc3d3-c835-42a6-b339-2424a186f5ea
+           Layout version: -63
+       isUpgradeFinalized: true
+=====================================================
+starting namenode, logging to /home/lidong/workspace/hadoop/logs/hadoop-lidong-namenode-node1.out
+# //////////////////////////////////////////////////
+# 	 [0;34;1m启动集群上所有的DataNode节点(在任意台namenode上执行)[0m
+# //////////////////////////////////////////////////
+node3: Warning: Permanently added 'node3,192.168.1.203' (ECDSA) to the list of known hosts.
+node3: starting datanode, logging to /home/lidong/workspace/hadoop/logs/hadoop-lidong-datanode-node3.out
+node2: Warning: Permanently added 'node2,192.168.1.202' (ECDSA) to the list of known hosts.
+node2: starting datanode, logging to /home/lidong/workspace/hadoop/logs/hadoop-lidong-datanode-node2.out
+node4: Warning: Permanently added 'node4,192.168.1.204' (ECDSA) to the list of known hosts.
+node4: starting datanode, logging to /home/lidong/workspace/hadoop/logs/hadoop-lidong-datanode-node4.out
+# //////////////////////////////////////////////////
+# 	 [0;34;1m启动YARN(RM + NM), 并在另一台上单独启动RM[0m
+# //////////////////////////////////////////////////
+starting yarn daemons
+starting resourcemanager, logging to /home/lidong/workspace/hadoop/logs/yarn-lidong-resourcemanager-node0.out
+node4: Warning: Permanently added 'node4,192.168.1.204' (ECDSA) to the list of known hosts.
+node4: starting nodemanager, logging to /home/lidong/workspace/hadoop/logs/yarn-lidong-nodemanager-node4.out
+node3: Warning: Permanently added 'node3,192.168.1.203' (ECDSA) to the list of known hosts.
+node3: starting nodemanager, logging to /home/lidong/workspace/hadoop/logs/yarn-lidong-nodemanager-node3.out
+node2: Warning: Permanently added 'node2,192.168.1.202' (ECDSA) to the list of known hosts.
+node2: starting nodemanager, logging to /home/lidong/workspace/hadoop/logs/yarn-lidong-nodemanager-node2.out
+starting resourcemanager, logging to /home/lidong/workspace/hadoop/logs/yarn-lidong-resourcemanager-node5.out
+# //////////////////////////////////////////////////
+# 	 [0;34;1m启动ZKFC(在所有的namenode集群上)[0m
+# //////////////////////////////////////////////////
+starting zkfc, logging to /home/lidong/workspace/hadoop/logs/hadoop-lidong-zkfc-node0.out
+starting zkfc, logging to /home/lidong/workspace/hadoop/logs/hadoop-lidong-zkfc-node1.out
+# //////////////////////////////////////////////////
+# 	 [0;34;1m开启MR历史日志服务[0m
+# //////////////////////////////////////////////////
+starting historyserver, logging to /opt/ws/hadoop/logs/mapred-lidong-historyserver-node0.out
+starting historyserver, logging to /opt/ws/hadoop/logs/mapred-lidong-historyserver-node1.out
+-----> __start_hbase
+# //////////////////////////////////////////////////
+# 	 [0;34;1m启动启动整个集群(HMaster和HRegionServer)[0m
+# //////////////////////////////////////////////////
+starting master, logging to /opt/ws/hbase/logs/hbase-lidong-master-node1.out
+node3: Warning: Permanently added 'node3,192.168.1.203' (ECDSA) to the list of known hosts.
+node3: starting regionserver, logging to /opt/ws/hbase/logs/hbase-lidong-regionserver-node3.out
+node2: Warning: Permanently added 'node2,192.168.1.202' (ECDSA) to the list of known hosts.
+node2: starting regionserver, logging to /opt/ws/hbase/logs/hbase-lidong-regionserver-node2.out
+node4: Warning: Permanently added 'node4,192.168.1.204' (ECDSA) to the list of known hosts.
+node4: starting regionserver, logging to /opt/ws/hbase/logs/hbase-lidong-regionserver-node4.out
+# //////////////////////////////////////////////////
+# 	 [0;34;1m启动另一个HMaster[0m
+# //////////////////////////////////////////////////
+starting master, logging to /opt/ws/hbase/logs/hbase-lidong-master-node5.out

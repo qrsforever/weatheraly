@@ -6,13 +6,15 @@ import re
 from common_utils import print_with_color
 
 mnt_cmd='sudo mount -o user=lidong,password=1,uid=1000,gid=1000 //{}/workspace /home/lidong/vagrant/{}'
-umt_cmd='sudo umount /home/lidong/vagrant/{} >/dev/null'
+umt_cmd='sudo umount /home/lidong/vagrant/'
 
 vag_dir='/home/lidong/vagrant'
 
 if __name__ == "__main__":
     if not os.path.exists(vag_dir):
         os.mkdir(vag_dir)
+        os.symlink("/home/lidong/workspace", vag_dir + "/node0")
+
 
     pattern = "PING node\d+ \((\d{3}.\d{3}.\d{1,3}.\d{1,3})\) .*? (\d{1}) received, .*?"
     ping = re.compile(pattern, re.S)
@@ -23,7 +25,7 @@ if __name__ == "__main__":
         if not os.path.exists(path):
             os.mkdir(path)
 
-        os.system(umt_cmd.format(node)) 
+        os.system(umt_cmd + node + " 2>/dev/null") 
         text = os.popen("ping -c 1 -W 1 " + node).read()
         res = ping.match(text)
         if res is not None:

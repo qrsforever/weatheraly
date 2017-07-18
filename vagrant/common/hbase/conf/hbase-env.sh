@@ -28,7 +28,7 @@ export JAVA_HOME=/opt/jdk
 
 # Extra Java CLASSPATH elements.  Optional.
 # HA集群环境需要设置, 需要core-site.xml hdfs-site.xml两个文件
-export HBASE_CLASSPATH=/opt/hadoop/etc/hadoop:/opt/hadoop/share/hadoop/common/lib/log4j-1.2.17.jar:/opt/hadoop/share/hadoop/common/lib/slf4j-api-1.7.10.jar:/opt/hadoop/share/hadoop/common/lib/slf4j-log4j12-1.7.10.jar
+export HBASE_CLASSPATH=/opt/hadoop/share/hadoop/common/lib/log4j-1.2.17.jar:/opt/hadoop/share/hadoop/common/lib/slf4j-api-1.7.10.jar:/opt/hadoop/share/hadoop/common/lib/slf4j-log4j12-1.7.10.jar
 
 # export HBASE_DISABLE_HADOOP_CLASSPATH_LOOKUP=true
 

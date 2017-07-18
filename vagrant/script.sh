@@ -17,8 +17,6 @@ ssh_dir="/home/$user/.ssh/"
 ssh_cnf="config"
 ssh_key="id_rsa"
 
-whoami=/home/$user/whoami.txt
-
 WS_DIR=/home/$user/workspace
 CONF_DIR=/home/$user/nfs
 
@@ -108,8 +106,8 @@ __system_conf() {
             fi
             cp -arf $COMMON_DIR/linux/etc/* /etc
             # 替换127.0.0.1 为本机的ip
-            ip=`grep $hn /etc/hosts | cut -d\  -f1`
-            sed -i "s/127.0.0.1/$ip/g" /etc/hosts
+            # ip=`grep $hn /etc/hosts | cut -d\  -f1`
+            # sed -i "s/127.0.0.1/$ip/g" /etc/hosts
             chown root:root /etc/sudoers
         else
             files=`ls $COMMON_DIR/linux/etc/`
@@ -229,7 +227,10 @@ __hbase_conf() {
         cp -arpf $COMMON_DIR/hbase/conf/* conf
 
         # 将Hbase的配置同时 copy 到 hadoop 中
-        cp -arpf $COMMON_DIR/hbase/conf/* $HADOOP_HOME/etc/hadoop/
+        # cp -arpf $COMMON_DIR/hbase/conf/* $HADOOP_HOME/etc/hadoop/
+
+        cp -arpf $HADOOP_HOME/etc/hadoop/core-site.xml conf
+        cp -arpf $HADOOP_HOME/etc/hadoop/hdfs-site.xml conf
     fi
     chown -R $user:$user $WS_DIR/hbase
 

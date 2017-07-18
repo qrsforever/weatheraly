@@ -1,0 +1,15 @@
+$TTL	604800
+@	IN	SOA	ha.com. root.ha.com. (
+			      1		; Serial
+			 604800		; Refresh
+			  86400		; Retry
+			2419200		; Expire
+			 604800 )	; Negative Cache TTL
+;
+@	IN	NS	ha.com.
+200	IN	PTR	node0.ha.com.
+201	IN	PTR	node1.ha.com.
+202	IN	PTR	node2.ha.com.
+203	IN	PTR	node3.ha.com.
+204	IN	PTR	node4.ha.com.
+205	IN	PTR	node5.ha.com.

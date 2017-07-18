@@ -19,7 +19,7 @@ def copy_hadoop_jars():
         return
     ver = os.environ.get("HADOOP_VERSION")
     if ver is None:
-        ver = "2.8.0"
+        ver = "2.7.3"
     m2_hadoop = os.path.join(M2_REPO, "org", "apache", "hadoop")
     ha_share = os.path.join(home, "share", "hadoop")
 

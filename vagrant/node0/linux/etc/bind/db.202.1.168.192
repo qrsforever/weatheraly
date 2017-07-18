@@ -1,0 +1,10 @@
+$TTL	604800
+@	IN	SOA	node2. root.node2. (
+			      1		; Serial
+			 604800		; Refresh
+			  86400		; Retry
+			2419200		; Expire
+			 604800 )	; Negative Cache TTL
+;
+@	IN	NS	node2.
+@	IN	PTR	node2.
