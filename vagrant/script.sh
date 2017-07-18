@@ -106,10 +106,11 @@ __system_conf() {
             then
                 rm /etc/timezone
             fi
-            cp $COMMON_DIR/linux/etc/* /etc
+            cp -arf $COMMON_DIR/linux/etc/* /etc
             # 替换127.0.0.1 为本机的ip
             ip=`grep $hn /etc/hosts | cut -d\  -f1`
             sed -i "s/127.0.0.1/$ip/g" /etc/hosts
+            chown root:root /etc/sudoers
         else
             files=`ls $COMMON_DIR/linux/etc/`
             echo "WANRNING! files underside NEED MELD TO YOUR HOST MENUALY"
@@ -271,7 +272,7 @@ __main() {
         echo "cleanup: *** "
         if [[ -d $WS_DIR ]]
         then
-            rm -rf $WS_DIR
+            rm -rf $WS_DIR/*
         fi
     fi
 
