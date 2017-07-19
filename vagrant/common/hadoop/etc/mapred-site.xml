@@ -11,24 +11,24 @@
     <!-- 设置每个job的map任务数 -->
     <property>  
         <name>mapreduce.job.maps</name>  
-        <value>6</value>  
+        <value>4</value>  
     </property>  
 
     <!-- 设置每个job的reduce任务数 -->
     <property>  
         <name>mapreduce.job.reduces</name>  
-        <value>6</value>  
+        <value>4</value>  
     </property>  
 
     <!-- 实际物理内存量，默认是1024 -->
     <property>
         <name>mapreduce.map.memory.mb</name>
-        <value>512</value>
+        <value>1024</value>
     </property> 
 
     <property>
         <name>mapreduce.reduce.memory.mb</name>
-        <value>512</value>
+        <value>1024</value>
     </property> 
 
     <!-- 设置每个任务的JVM参数, 默认是-Xmx200m (80% of memory.mb) -->

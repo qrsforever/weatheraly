@@ -63,6 +63,7 @@ public class DataParseMapper extends Mapper<LongWritable, Text, Text, AvroValue<
             record.put("airTemperature", noaa.getAirTemperature());
         else
             record.put("airTemperature", -99);
+        logger.info("map: " + record.toString());
         context.write(new Text(keyID), new AvroValue<GenericRecord>(record));
     }
 }

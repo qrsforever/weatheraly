@@ -14,6 +14,8 @@
 5. 创建必要的目录, 和NOAA数据HDFS存储
     if $(hadoop fs -test -d weatheraly/dataparse/output); then hdfs dfs -rm -r -skipTrash weatheraly/dataparse/output; fi
     hdfs dfs -mkdir -p /user/lidong/weatheraly/dataparse/input
+    hdfs dfs -mkdir -p /tmp/logs
+    hdfs dfs -ls /tmp
     hadoop fs -copyFromLocal ../../bin/noaa/ /user/lidong/weatheraly/dataparse/input/
     hdfs dfs -ls weatheraly/dataparse/input/noaa
 
@@ -29,8 +31,9 @@
     # hadoop jar target/datapaser-1.0.0.jar com.weatheraly.bigdata.DataParseApp weatheraly/dataparse/input/noaa/2017/583620-99999-2017.gz weatheraly/dataparse/output
     # hadoop jar target/datapaser-1.0.0.jar com.weatheraly.bigdata.DataParseApp weatheraly/dataparse/input/noaa/2017/*.gz weatheraly/dataparse/output
     # hadoop jar target/datapaser-1.0.0.jar com.weatheraly.bigdata.DataParseApp weatheraly/dataparse/input/noaa/**/*.gz weatheraly/dataparse/output
-
-    hadoop jar target/datapaser-1.0.0.jar com.weatheraly.bigdata.DataParseApp weatheraly/dataparse/input/noaa/2017/583620-99999-2017.gz weather
+    export HBASE_JARS="/opt/hbase/lib/hbase-common-1.2.6.jar,/opt/hbase/lib/hbase-client-1.2.6.jar,/opt/hbase/lib/hbase-server-1.2.6.jar,/opt/hbase/lib/hbase-procedure-1.2.6.jar,/opt/hbase/lib/hbase-protocol-1.2.6.jar"
+    hdfs dfs -put ../../bin/bak/1945/545110-99999-1945 weatheraly/dataparse/input
+    hadoop jar target/datapaser-1.0.0.jar com.weatheraly.bigdata.DataParseApp -libjars "$HBASE_JARS"  weatheraly/dataparse/input/* weather
 
 8. 查看mr日志
     hdfs dfs -ls /tmp/logs/lidong/logs

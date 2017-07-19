@@ -4,13 +4,12 @@ import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
 
-import javax.xml.soap.Text;
-
 import org.apache.avro.Schema;
 import org.apache.avro.mapreduce.AvroJob;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.hbase.HConstants;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.HTableDescriptor;
@@ -21,6 +20,7 @@ import org.apache.hadoop.hbase.client.ConnectionFactory;
 import org.apache.hadoop.hbase.client.Put;
 import org.apache.hadoop.hbase.io.ImmutableBytesWritable;
 import org.apache.hadoop.hbase.mapreduce.TableOutputFormat;
+import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
@@ -59,7 +59,14 @@ public class DataParseApp extends Configured implements Tool {
     public static void createHBaseTable(String tablename) throws IOException {   
         Configuration config = HBaseConfiguration.create();
         logger.info("Config files = " + config.toString());
-        logger.info("Get zookeeper.znode.parent = " + config.get("zookeeper.znode.parent", "000"));
+        logger.info("Get zookeeper.znode.parent = " + 
+                config.get(HConstants.ZOOKEEPER_ZNODE_PARENT , HConstants.DEFAULT_ZOOKEEPER_ZNODE_PARENT));
+        final String[] serverHosts =                                              
+            config.getStrings(HConstants.ZOOKEEPER_QUORUM, HConstants.LOCALHOST);   
+        for (int i = 0; i < serverHosts.length; ++i) { 
+            logger.info("ZK[" + i + "]: " + serverHosts[i]);
+        }
+        
         Connection connection = ConnectionFactory.createConnection(config);
         try {
             // Create table
@@ -72,12 +79,13 @@ public class DataParseApp extends Configured implements Tool {
                 HColumnDescriptor hcd = new HColumnDescriptor("content");
                 // 表中增加列族
                 htd.addFamily(hcd);
-                // if (admin.tableExists(tableName)) {
-                    // System.out.println("TableName " + tableName + " exists");
-                    // admin.disableTable(tableName);
-                    // // 清空表中数据
-                    // admin.truncateTable(tableName, false);
-                // } else 
+                if (admin.tableExists(tableName)) {
+                    System.out.println("TableName " + tableName + " exists");
+                    admin.disableTable(tableName);
+                    // 清空表中数据
+                    admin.truncateTable(tableName, false);
+                    admin.enableTable(tableName);
+                } else 
                     admin.createTable(htd);
             } finally {
                 admin.close();

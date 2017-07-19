@@ -24,6 +24,14 @@ def _chk_df_status(node):
     print_with_color("check df: " + node)
     os.system("ssh -o LogLevel=ERROR " + node + " df -h | grep sda1")
 
+def _chk_netstat_status(node):
+    if node == 'node0':
+        print_with_color("check netstat: node0")
+        os.system("netstat -tuplan")
+        return
+    print_with_color("check netstat: " + node)
+    os.system("ssh -o LogLevel=ERROR " + node + " netstat -tuplan")
+
 def _chk_ulimit_status(node):
     """
     查看集群中每个节点的limit -a
@@ -33,7 +41,7 @@ def _chk_ulimit_status(node):
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
-        print("Use: ", sys.argv[0], " [jps|zk|df|ulimit]")
+        print("Use: ", sys.argv[0], " [jps|zk|df|netstat|ulimit]")
         sys.exit(0)
 
     arg = sys.argv[1] 
@@ -46,7 +54,9 @@ if __name__ == "__main__":
         node = "node" + str(i)
         if arg == "jps":
             _chk_jps_status(node)
-        elif arg == "ulimit":
-            _chk_ulimit_status(node)
         elif arg == "df":
             _chk_df_status(node)
+        elif arg == "netstat":
+            _chk_netstat_status(node)
+        elif arg == "ulimit":
+            _chk_ulimit_status(node)

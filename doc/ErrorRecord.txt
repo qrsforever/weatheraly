@@ -132,7 +132,8 @@
          WARN zookeeper.ClientCnxn: Session 0x0 for server null, unexpected error, closing socket connection and attempting reconnect
          java.net.ConnectException: Connection refused
     解决:
-        在node0上运行hadoop, 因为没有配置zk, 运行出错, 到装了zk的node机运行ok, Zk真是一个垃圾的东西.
+         hadoop 运行程序没有读到hbase的配置文件hbase.zookeeper.quorum 
+         将hbase-site.xml放到hadoop/etc/hadoop中
 
 8. log4j多个不同版本jar包
     错误:
@@ -251,21 +252,16 @@
         2017-07-17 18:01:32,428 WARN  [regionserver/localhost/192.168.1.202:16020] regionserver.HRegionServer: reportForDuty failed; sleeping and then retrying.
         2017-07-17 18:01:35,429 INFO  [regionserver/localhost/192.168.1.202:16020] regionserver.HRegionServer: reportForDuty to master=localhost,16000,1500284427448 with port=16020, startcode=1500284423534
         2017-07-17 18:01:35,429 WARN  [regionserver/localhost/192.168.1.202:16020] regionserver.HRegionServer: error telling master we are up
-    
-    建议:
-        重新格式化hdfs文件系统
+        
 
-
-13. 
-    错误:
         2017-07-17 19:58:39,691 INFO  [localhost:16000.activeMasterManager] master.ServerManager: Waiting for region servers count to settle; currently checked in 0, slept for 134079 ms, expecting minimum of 1, maximum of 2147483647, timeout of 4500 ms, interval of 1500 ms.
         2017-07-17 19:58:41,196 INFO  [localhost:16000.activeMasterManager] master.ServerManager: Waiting for region servers count to settle; currently checked in 0, slept for 135584 ms, expecting minimum of 1, maximum of 2147483647, timeout of 4500 ms, interval of 1500 ms.
         2017-07-17 19:58:42,700 INFO  [localhost:16000.activeMasterManager] master.ServerManager: Waiting for region servers count to settle; currently checked in 0, slept for 137088 ms, expecting minimum of 1, maximum of 2147483647, timeout of 4500 ms, interval of 1500 ms.
+    
+    建议:
+        /etc/hosts 里面还必须有127.0.0.1 localhost这一项
 
-    未解决
-
-
-14. hbase.version 问题, 实际上是clusterID不匹配问题
+13. hbase.version 问题, 实际上是clusterID不匹配问题
     错误:
         2017-07-17 20:31:57,010 WARN org.apache.hadoop.hdfs.server.common.Storage: Failed to add storage directory [DISK]file:/opt/ws/hadoop/hdfs/data/
         java.io.IOException: Incompatible clusterIDs in /home/lidong/workspace/hadoop/hdfs/data: namenode clusterID = CID-9341723c-cd5d-4f4e-bba3-190f581d1a1f; datanode clusterID = CID-f2f1c1e3-1ec5-4f22-a41f-8814fcf36521
@@ -287,9 +283,64 @@
         stop-cluster.sh
         start-vm.sh 1
         
-15. Hbase如何基于NameNode的HA进行配置问题
+14. Hbase如何基于NameNode的HA进行配置问题
     错误:
         17/07/17 21:00:41 WARN wal.WALProcedureStore: Log directory not found: File hdfs://bigha/hbase/MasterProcWALs does not exist. 
     解决:
         Add a pointer to your HADOOP_CONF_DIR to the HBASE_CLASSPATH environment variable in hbase-env.sh.
         Add a copy of hdfs-site.xml (or hadoop-site.xml) or, better, symlinks, under ${HBASE_HOME}/conf, or
+
+15. logs目录不存在
+    错误:
+        2017-07-19 13:06:11,050 ERROR org.apache.hadoop.yarn.logaggregation.AggregatedLogDeletionService: Error reading root log dir this deletion attempt is being aborted
+        java.io.FileNotFoundException: File /opt/ws/hadoop/tmp/logs does not exist.
+        	at org.apache.hadoop.hdfs.DistributedFileSystem.listStatusInternal(DistributedFileSystem.java:795)
+        	at org.apache.hadoop.hdfs.DistributedFileSystem.access$700(DistributedFileSystem.java:106)
+        	at org.apache.hadoop.hdfs.DistributedFileSystem$18.doCall(DistributedFileSystem.java:853)
+        	at org.apache.hadoop.hdfs.DistributedFileSystem$18.doCall(DistributedFileSystem.java:849)
+        	at org.apache.hadoop.fs.FileSystemLinkResolver.resolve(FileSystemLinkResolver.java:81)
+        	at org.apache.hadoop.hdfs.DistributedFileSystem.listStatus(DistributedFileSystem.java:849)
+        	at org.apache.hadoop.yarn.logaggregation.AggregatedLogDeletionService$LogDeletionTask.run(AggregatedLogDeletionService.java:82)
+        	at java.util.TimerThread.mainLoop(Timer.java:555)
+        	at java.util.TimerThread.run(Timer.java:505)
+    解决:
+        (yarn.nodemanager.remote-app-log-dir)目录是hdfs分布式系统的,不是node节点的, 改回去
+
+16. HBase 包找不到
+    错误:
+        2017-07-19 13:30:55,475 INFO [main] org.apache.hadoop.mapreduce.v2.app.MRAppMaster: Created MRAppMaster for application appattempt_1500440310693_0001_000001
+        2017-07-19 13:30:55,839 INFO [main] org.apache.hadoop.mapreduce.v2.app.MRAppMaster: Executing with tokens:
+        2017-07-19 13:30:55,839 INFO [main] org.apache.hadoop.mapreduce.v2.app.MRAppMaster: Kind: YARN_AM_RM_TOKEN, Service: , Ident: (appAttemptId { application_id { id: 1 cluster_timestamp: 1500440310693 } attemptId: 1 } keyId: -1359864145)
+        2017-07-19 13:30:56,121 INFO [main] org.apache.hadoop.mapreduce.v2.app.MRAppMaster: Using mapred newApiCommitter.
+        2017-07-19 13:30:56,139 INFO [main] org.apache.hadoop.mapreduce.v2.app.MRAppMaster: OutputCommitter set in config null
+        2017-07-19 13:30:56,220 INFO [main] org.apache.hadoop.service.AbstractService: Service org.apache.hadoop.mapreduce.v2.app.MRAppMaster failed in state INITED; cause: org.apache.hadoop.yarn.exceptions.YarnRuntimeException: java.lang.RuntimeException: java.lang.ClassNotFoundException: Class org.apache.hadoop.hbase.mapreduce.TableOutputFormat not found
+        org.apache.hadoop.yarn.exceptions.YarnRuntimeException: java.lang.RuntimeException: java.lang.ClassNotFoundException: Class org.apache.hadoop.hbase.mapreduce.TableOutputFormat not found
+        	at org.apache.hadoop.mapreduce.v2.app.MRAppMaster$2.call(MRAppMaster.java:518)
+        	at org.apache.hadoop.mapreduce.v2.app.MRAppMaster$2.call(MRAppMaster.java:498)
+        	at org.apache.hadoop.mapreduce.v2.app.MRAppMaster.callWithJobClassLoader(MRAppMaster.java:1593)
+        	at org.apache.hadoop.mapreduce.v2.app.MRAppMaster.createOutputCommitter(MRAppMaster.java:498)
+        	at org.apache.hadoop.mapreduce.v2.app.MRAppMaster.serviceInit(MRAppMaster.java:284)
+        	at org.apache.hadoop.service.AbstractService.init(AbstractService.java:163)
+        	at org.apache.hadoop.mapreduce.v2.app.MRAppMaster$5.run(MRAppMaster.java:1551)
+        	at java.security.AccessController.doPrivileged(Native Method)
+    解决:
+        默认YARN找库路径在yarn.application.classpath 
+
+17. HTTP页面错误refused
+    错误:
+        Problem accessing /proxy/application_1500464545519_0001/. Reason:
+        
+           Connection to http://node4:8088 refused
+    解决:
+        //TODO
+
+
+18. Reduce halt
+    错误:
+        2017-07-19 19:45:40,415 INFO [RMCommunicator Allocator] org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator: Before Scheduling: PendingReds:4 ScheduledMaps:0 ScheduledReds:0 AssignedMaps:1 AssignedReds:0 CompletedMaps:1 CompletedReds:0 ContAlloc:1 ContRel:0 HostLocal:1 RackLocal:0
+        2017-07-19 19:45:40,422 INFO [RMCommunicator Allocator] org.apache.hadoop.mapreduce.v2.app.rm.RMContainerAllocator: Received completed container container_1500464545519_0001_01_000002
+        2017-07-19 19:45:40,422 INFO [AsyncDispatcher event handler] org.apache.hadoop.mapreduce.v2.app.job.impl.TaskAttemptImpl: Diagnostics report from attempt_1500464545519_0001_m_000000_0: Container killed by the ApplicationMaster.
+        Container killed on request. Exit code is 143
+        Container exited with a non-zero exit code 143
+    解决:
+        //TODO

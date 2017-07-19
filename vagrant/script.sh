@@ -187,6 +187,10 @@ __hadoop_conf() {
     if [[ -d $COMMON_DIR/hadoop/etc ]]
     then
         cp -arpf $COMMON_DIR/hadoop/etc/* etc/hadoop
+
+        # 将Hadoop中的core-site.xml hdfs-site.xml同步到hbase中 或者配置 HBASE_CLASSPATH
+        cp -arpf $COMMON_DIR/hadoop/etc/core-site.xml $HBASE_HOME/conf
+        cp -arpf $COMMON_DIR/hadoop/etc/hdfs-site.xml $HBASE_HOME/conf
     fi
     chown -R $user:$user $WS_DIR/hadoop
 
@@ -194,6 +198,7 @@ __hadoop_conf() {
     if [[ -d $HADOOP_DIFF/etc ]]
     then
         cp -arpf $HADOOP_DIFF/etc/* etc/hadoop
+        cp -arpf $HADOOP_DIFF/etc/* $HBASE_HOME/conf
     fi
     chown -R $user:$user etc
 
@@ -227,10 +232,7 @@ __hbase_conf() {
         cp -arpf $COMMON_DIR/hbase/conf/* conf
 
         # 将Hbase的配置同时 copy 到 hadoop 中
-        # cp -arpf $COMMON_DIR/hbase/conf/* $HADOOP_HOME/etc/hadoop/
-
-        cp -arpf $HADOOP_HOME/etc/hadoop/core-site.xml conf
-        cp -arpf $HADOOP_HOME/etc/hadoop/hdfs-site.xml conf
+        cp -arpf $COMMON_DIR/hbase/conf/* $HADOOP_HOME/etc/hadoop/
     fi
     chown -R $user:$user $WS_DIR/hbase
 
@@ -238,6 +240,7 @@ __hbase_conf() {
     if [[ -d $HBASE_DIFF/conf ]]
     then
         cp -arpf $HBASE_DIFF/conf/* conf
+        # 将差异文件同步到hadoop配置
         cp -arpf $HBASE_DIFF/conf/* $HADOOP_HOME/etc/hadoop/
     fi
     chown -R $user:$user conf

@@ -95,6 +95,8 @@ __main() {
     __start_journalnode
     __start_hadoop
     __start_hbase
+
+    hdfs dfs -mkdir -p /tmp/logs
 }
 
 __main
