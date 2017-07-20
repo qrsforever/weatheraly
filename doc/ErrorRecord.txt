@@ -332,8 +332,7 @@
         
            Connection to http://node4:8088 refused
     解决:
-        //TODO
-
+        每一个RM都要设置, 参考yarn-site.xml "yarn.resourcemanager.webapp.address.rmx"
 
 18. Reduce halt
     错误:
@@ -343,4 +342,6 @@
         Container killed on request. Exit code is 143
         Container exited with a non-zero exit code 143
     解决:
-        //TODO
+        无意间发现再yarn-site.xml中yarn.application.classpath添加: /opt/hbase/conf/,/opt/hbase/lib/*, 问题解决. 
+        怀疑是AM应用程序找不到hbase相关配置
+ 

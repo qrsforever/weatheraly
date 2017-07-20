@@ -20,7 +20,7 @@ export HADOOP_YARN_USER=${HADOOP_YARN_USER:-yarn}
 export YARN_CONF_DIR="${YARN_CONF_DIR:-$HADOOP_YARN_HOME/conf}"
 
 export YARN_LOG_DIR=/home/$USER/workspace/hadoop/logs
-export YARN_LOGFILE=/home/$USER/workspace/hadoop/tmp/yarn.log
+export YARN_LOGFILE=yarn.log
 
 # some Java parameters
 export JAVA_HOME=/opt/jdk

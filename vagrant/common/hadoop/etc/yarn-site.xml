@@ -61,16 +61,46 @@
         <name>yarn.resourcemanager.hostname.rm2</name>
         <value>node5</value>
     </property>
+
+    <property>
+        <name>yarn.resourcemanager.address.rm1</name>
+        <value>node0:8032</value>
+    </property>
+
+    <property>
+        <name>yarn.resourcemanager.address.rm2</name>
+        <value>node5:8032</value>
+    </property>
+
+    <property>
+        <name>yarn.resourcemanager.scheduler.address.rm1</name>
+        <value>node0:8030</value>
+    </property>
+
+    <property>
+        <name>yarn.resourcemanager.scheduler.address.rm2</name>
+        <value>node5:8030</value>
+    </property>
+
+    <property>
+        <name>yarn.resourcemanager.resource-tracker.address.rm1</name>
+        <value>node0:8031</value>
+    </property>
+
+    <property>
+        <name>yarn.resourcemanager.resource-tracker.address.rm2</name>
+        <value>node5:8031</value>
+    </property>
     
-<!--     <property>
-   -         <name>yarn.resourcemanager.webapp.address.rm1</name>
-   -         <value>node0:8088</value>
-   -     </property>
-   - 
-   -     <property>
-   -         <name>yarn.resourcemanager.webapp.address.rm2</name>
-   -         <value>node5:8088</value>
-   -     </property> -->
+    <property>
+        <name>yarn.resourcemanager.webapp.address.rm1</name>
+        <value>node0:8088</value>
+    </property>
+
+    <property>
+        <name>yarn.resourcemanager.webapp.address.rm2</name>
+        <value>node5:8088</value>
+    </property> 
 
     <!--开启故障自动切换-->
     <property>
@@ -83,10 +113,10 @@
         <value>true</value>
     </property>
 
-    <!-- <property>
-       -     <name>yarn.resourcemanager.ha.automatic-failover.zk-base-path</name>
-       -     <value>/yarn-leader-election</value>
-       - </property> -->
+    <property>
+        <name>yarn.resourcemanager.ha.automatic-failover.zk-base-path</name>
+        <value>/yarn-leader-election</value>
+    </property> 
 
     <!--开启自动恢复功能-->
     <property>
@@ -94,10 +124,20 @@
         <value>true</value>
     </property>
 
-    <!-- <property>
-       -     <name>yarn.application.classpath</name>
-       -     <value>/opt/hbase/lib/*</value>
-       - </property> -->
+    <!-- AM启动任务不会继承父进程的classpath, 可以通过该属性告知, 或者运行jar包 -libjar指定 -->
+    <property>
+        <name>yarn.application.classpath</name>
+        <value>
+            /opt/hadoop/,
+            /opt/hadoop/etc/hadoop/*,
+            /opt/hadoop/share/hadoop/common/*,/opt/hadoop/share/hadoop/common/lib/*,
+            /opt/hadoop/share/hadoop/hdfs/*,/opt/hadoop/share/hadoop/hdfs/lib/*,
+            /opt/hadoop/share/hadoop/mapreduce/*,/opt/hadoop/share/hadoop/mapreduce/lib/*,
+            /opt/hadoop/share/hadoop/yarn/*,/opt/hadoop/share/hadoop/yarn/lib/*,
+            /opt/hadoop/share/hadoop/tools/lib/*,
+            /opt/hbase/conf/,/opt/hbase/lib/*
+        </value>
+    </property> 
 
     <property>
         <name>yarn.resourcemanager.store.class</name>
@@ -136,7 +176,7 @@
     <!-- 最小可申请内存量，默认是1024 -->
     <property>
         <name>yarn.scheduler.minimum-allocation-mb</name>
-        <value>512</value>
+        <value>256</value>
     </property>
 
     <!-- 最小可申请CPU数，默认是1 -->

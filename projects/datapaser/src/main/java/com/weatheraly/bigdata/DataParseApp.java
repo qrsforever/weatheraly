@@ -58,14 +58,16 @@ public class DataParseApp extends Configured implements Tool {
      */
     public static void createHBaseTable(String tablename) throws IOException {   
         Configuration config = HBaseConfiguration.create();
-        logger.info("Config files = " + config.toString());
-        logger.info("Get zookeeper.znode.parent = " + 
-                config.get(HConstants.ZOOKEEPER_ZNODE_PARENT , HConstants.DEFAULT_ZOOKEEPER_ZNODE_PARENT));
-        final String[] serverHosts =                                              
-            config.getStrings(HConstants.ZOOKEEPER_QUORUM, HConstants.LOCALHOST);   
-        for (int i = 0; i < serverHosts.length; ++i) { 
-            logger.info("ZK[" + i + "]: " + serverHosts[i]);
-        }
+
+        // Debug
+        // logger.info("Config files = " + config.toString());
+        // logger.info("Get zookeeper.znode.parent = " + 
+        //         config.get(HConstants.ZOOKEEPER_ZNODE_PARENT , HConstants.DEFAULT_ZOOKEEPER_ZNODE_PARENT));
+        // final String[] serverHosts =                                              
+        //     config.getStrings(HConstants.ZOOKEEPER_QUORUM, HConstants.LOCALHOST);   
+        // for (int i = 0; i < serverHosts.length; ++i) { 
+        //     logger.info("ZK[" + i + "]: " + serverHosts[i]);
+        // }
         
         Connection connection = ConnectionFactory.createConnection(config);
         try {
@@ -83,16 +85,17 @@ public class DataParseApp extends Configured implements Tool {
                     System.out.println("TableName " + tableName + " exists");
                     admin.disableTable(tableName);
                     // 清空表中数据
-                    admin.truncateTable(tableName, false);
-                    admin.enableTable(tableName);
-                } else 
-                    admin.createTable(htd);
+                    // admin.truncateTable(tableName, false);
+                    admin.deleteTable(tableName);
+                }
+                admin.createTable(htd);
             } finally {
                 admin.close();
             }
         } finally {
             connection.close();
         }
+
     }
   
     public static void main(String[] args) throws Exception {
@@ -121,13 +124,12 @@ public class DataParseApp extends Configured implements Tool {
         job.setJobName("Parse Weather Info");
 
         // 设置输入 (文件夹里面是gz文件)
-        FileInputFormat.addInputPath(job, new Path(args[0]));
-        // FileOutputFormat.setOutputPath(job, new Path(args[1]));
-        job.getConfiguration().set(TableOutputFormat.OUTPUT_TABLE, args[1]);
-
         job.setInputFormatClass(TextInputFormat.class);
         // job.setOutputFormatClass(AvroKeyOutputFormat.class);
         job.setOutputFormatClass(TableOutputFormat.class);
+        FileInputFormat.addInputPath(job, new Path(args[0]));
+        // FileOutputFormat.setOutputPath(job, new Path(args[1]));
+        job.getConfiguration().set(TableOutputFormat.OUTPUT_TABLE, args[1]);
 
         // 设置map/reduder的处理类
         job.setMapperClass(DataParseMapper.class);
