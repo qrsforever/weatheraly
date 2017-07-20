@@ -18,9 +18,10 @@ export HADOOP_YARN_USER=${HADOOP_YARN_USER:-yarn}
 
 # resolve links - $0 may be a softlink
 export YARN_CONF_DIR="${YARN_CONF_DIR:-$HADOOP_YARN_HOME/conf}"
-
 export YARN_LOG_DIR=/home/$USER/workspace/hadoop/logs
+export YARN_PID_DIR=/home/$USER/workspace/hadoop/tmp
 export YARN_LOGFILE=yarn.log
+
 
 # some Java parameters
 export JAVA_HOME=/opt/jdk

@@ -76,6 +76,10 @@ __start_hadoop() {
     print_with_color "开启MR历史日志服务"
     ssh node0 "$run_env; mr-jobhistory-daemon.sh start historyserver"
     ssh node1 "$run_env; mr-jobhistory-daemon.sh start historyserver"
+
+    print_with_color "创建/tmp/logs目录"
+    hdfs dfs -mkdir -p /tmp/logs
+    hdfs dfs -chmod -R 755 /tmp/logs
 }
 
 # 4. 启动HBase
@@ -95,8 +99,6 @@ __main() {
     __start_journalnode
     __start_hadoop
     __start_hbase
-
-    hdfs dfs -mkdir -p /tmp/logs
 }
 
 __main
